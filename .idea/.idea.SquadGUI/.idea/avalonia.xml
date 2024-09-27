@@ -4,6 +4,11 @@
     <option name="projectPerEditor">
       <map>
         <entry key="SquadGUI/SquadGUI/App.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
+        <entry key="SquadGUI/SquadGUI/ViewModels/MainViewModel.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
+        <entry key="SquadGUI/SquadGUI/Views/DasboardView.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
+        <entry key="SquadGUI/SquadGUI/Views/Dashboard.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
+        <entry key="SquadGUI/SquadGUI/Views/DashboardView.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
+        <entry key="SquadGUI/SquadGUI/Views/LoginView.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
         <entry key="SquadGUI/SquadGUI/Views/MainView.axaml" value="SquadGUI/SquadGUI.Desktop/SquadGUI.Desktop.csproj" />
         <entry key="SquadGUI/SquadGUI/Views/MainWindow.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
         <entry key="SquadGUI/SquadGUI/Views/another.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />

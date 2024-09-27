@@ -1,5 +1,7 @@
 ﻿using System;
 using Avalonia;
+using Avalonia.ReactiveUI;
+using ReactiveUI;
 
 namespace SquadGUI.Desktop;
 
@@ -17,5 +19,6 @@ sealed class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
+            .UseReactiveUI()
             .LogToTrace();
 }

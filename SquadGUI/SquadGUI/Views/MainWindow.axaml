@@ -10,5 +10,10 @@
         Title="SquadGUI"
         MinHeight="850"
         MinWidth="600">
-        <views:LoginView/>
+    
+    <TransitioningContentControl Content="{Binding CurrentViewModel, DataType=vm:MainViewModel}">
+        <TransitioningContentControl.PageTransition>
+            <CrossFade Duration="0.5"/>
+        </TransitioningContentControl.PageTransition>
+    </TransitioningContentControl>
 </Window>

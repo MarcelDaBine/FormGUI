@@ -5,11 +5,11 @@
              xmlns:vm="clr-namespace:SquadGUI.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SquadGUI.Views.LoginView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:LoginViewModel">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainViewModel />
+        <vm:LoginViewModel />
     </Design.DataContext>
 
     <Grid RowDefinitions="38*, 6*, 6*, 6*, 6* ,38*" ColumnDefinitions="*,*,*">
@@ -21,7 +21,8 @@
                  HorizontalAlignment="Center"
                  VerticalAlignment="Center"
                  Watermark="email"
-                 KeyDown="EmailBox_OnKeyDown"/>
+                 KeyDown="EmailBox_OnKeyDown"
+                 Text="{Binding Email}"/>
         
         <TextBox Grid.Row="2" Grid.Column="1"
                  x:Name="PassBox"
@@ -32,22 +33,23 @@
                  VerticalAlignment="Center"
                  Watermark="password"
                  PasswordChar="*"
-                 KeyDown="PassBox_OnKeyDown"/>
+                 KeyDown="PassBox_OnKeyDown"
+                 Text="{Binding Password}"/>
         
         <Button Grid.Row="3" Grid.Column="1"
                 x:Name="SubmitButton"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Margin="10"
-                Click="Button_OnClick_Login">
+                Command="{Binding LoginCommand}" >
             submit
         </Button>
         
         <TextBlock Grid.Row="4" Grid.Column="1"
                x:Name="ErrorBlock"
                HorizontalAlignment="Center"
-               VerticalAlignment="Center">
+               VerticalAlignment="Center"
+               Text="{Binding ErrorText}">
         </TextBlock>
-        
     </Grid>
 </UserControl>
