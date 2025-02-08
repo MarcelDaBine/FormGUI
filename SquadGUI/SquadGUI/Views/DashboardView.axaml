@@ -3,18 +3,55 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SquadGUI.ViewModels"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SquadGUI.Views.DashboardView"
-             x:DataType="vm:DashboardViewModel">
+             x:DataType="vm:DashboardViewModel"
+             xmlns:Control="clr-namespace:SquadGUI.Assets"
+             >
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
+        KeyDown="{Binding  AddButonCommand}"
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:DashboardViewModel />
     </Design.DataContext>
-    <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*,*,*">
-        <TextBox
-            x:Name="TextBox1"
-            Watermark="salut"/>
+    
+    <UserControl.Styles>
+        <StyleInclude Source="/Assets/TextBoxDashboardStyle.axaml"/>
+        <StyleInclude Source="/Assets/ButtonDashboardStyle.axaml"/>
+    </UserControl.Styles>
+    
+    <Grid ColumnDefinitions="30*, 70*" RowDefinitions="70*,30*">
+        <SplitView Grid.Column="0" Grid.Row="0"
+                   PanePlacement="Left"
+                   IsPaneOpen="False">
+            <SplitView.Pane>
+                <Grid>
+                    <Button Width="100" Height="100"></Button>
+                </Grid>
+            </SplitView.Pane>
+            <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                <ItemsControl x:Name="Control" ItemsSource="{Binding NumTextBoxes}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                                <Control:NumTextBox Text="{Binding Text}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl> 
+            </ScrollViewer>
+            
+        </SplitView>
+    
+        <Button Grid.Column="0" Grid.Row="1" 
+                x:Name="ResetButton"
+                Command="{Binding ResetButtonCommand}"/>
+    
+        <lvc:CartesianChart Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                            x:Name="Chart"
+                            Series="{Binding Series}"
+                            YAxes="{Binding AxisList}">
+        </lvc:CartesianChart>
         
     </Grid>
+
 </UserControl>

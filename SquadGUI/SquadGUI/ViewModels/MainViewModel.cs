@@ -8,7 +8,6 @@ namespace SquadGUI.ViewModels;
 public class MainViewModel: ViewModelBase
 {
     private ViewModelBase _currentViewModel;
-    private CrossFade _crossFade;
 
     public ViewModelBase CurrentViewModel
     {
@@ -16,20 +15,14 @@ public class MainViewModel: ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
     }
 
-    public CrossFade CrossFade
-    {
-        get => _crossFade;
-        set => this.RaiseAndSetIfChanged(ref _crossFade, value);
-    }
-
     public MainViewModel()
     {
         CurrentViewModel = new LoginViewModel(SwitchToDashboard);
+        //CurrentViewModel = new DashboardViewModel();
     }
 
     private void SwitchToDashboard()
     {
-        CrossFade = new CrossFade(TimeSpan.FromMilliseconds(500));
         CurrentViewModel = new DashboardViewModel();
     }
 }

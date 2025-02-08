@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Tracing;
-using CommunityToolkit.Mvvm.ComponentModel;
 using ReactiveUI;
 using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
 
 namespace SquadGUI.ViewModels;
 
@@ -14,7 +8,9 @@ public partial class LoginViewModel : ViewModelBase
 {
     private string _email;
     private string _password;
-    private string _errortext;
+    private string _errorText;
+
+    private const string _emailSuffix = "a";
     
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
     
@@ -33,8 +29,8 @@ public partial class LoginViewModel : ViewModelBase
 
     public string ErrorText
     {
-        get => _errortext;
-        set => this.RaiseAndSetIfChanged(ref _errortext, value);
+        get => _errorText;
+        set => this.RaiseAndSetIfChanged(ref _errorText, value);
     }
     
 
@@ -44,7 +40,7 @@ public partial class LoginViewModel : ViewModelBase
         _navigateToDashboard = navigateToDashboard;
         
         _email = string.Empty;
-        _errortext = string.Empty;
+        _errorText = string.Empty;
         _password = string.Empty;
     }
     
@@ -56,7 +52,7 @@ public partial class LoginViewModel : ViewModelBase
             return;
         }
 
-        if (!Email.Contains("@cox.com"))
+        if (!Email.Contains(_emailSuffix))
         {
             ErrorText= "Please input an correct email address.";
             return;

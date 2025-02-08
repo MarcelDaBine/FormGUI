@@ -29,5 +29,4 @@ public partial class LoginView : UserControl
             SubmitButton.Command.Execute(null);
         }
     }
-    
 }

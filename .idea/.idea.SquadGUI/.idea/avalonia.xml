@@ -4,6 +4,7 @@
     <option name="projectPerEditor">
       <map>
         <entry key="SquadGUI/SquadGUI/App.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
+        <entry key="SquadGUI/SquadGUI/Assets/TextBoxDashboardStyle.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
         <entry key="SquadGUI/SquadGUI/ViewModels/MainViewModel.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
         <entry key="SquadGUI/SquadGUI/Views/DasboardView.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
         <entry key="SquadGUI/SquadGUI/Views/Dashboard.axaml" value="SquadGUI/SquadGUI.Browser/SquadGUI.Browser.csproj" />
