@@ -26,6 +26,7 @@ public class DashboardViewModel : ViewModelBase
     private ISeries[] _series;
     private Axis _yAxis;
     private List<Axis> _axisList;
+    private LineSeries<double> _lineSeries;
     
     public int NumBoxCount
     {
@@ -69,6 +70,19 @@ public class DashboardViewModel : ViewModelBase
             MaxLimit = 1250,
         };
         _axisList = new List<Axis> { _yAxis };
+
+        _lineSeries = new LineSeries<double>
+        {
+            Stroke = new SolidColorPaint(SKColors.MediumPurple) { StrokeThickness = 6 },
+            GeometrySize = 10,
+            GeometryStroke = new SolidColorPaint(SKColors.MediumPurple),
+            GeometryFill = new SolidColorPaint(SKColors.WhiteSmoke),
+            LineSmoothness = 0,
+
+            Fill = null,
+        };
+
+        Series = new ISeries[] { _lineSeries };
         
         ResetButtonCommand = ReactiveCommand.Create(ResetButton_OnClick);
         
@@ -115,21 +129,9 @@ public class DashboardViewModel : ViewModelBase
     
     private void UpdateSeries()
     {
-        Series = new ISeries[]
-        {
-            new LineSeries<double>
-            {
-                Values = NumTextBoxes.Where((box, index) => index != _tailIndex)
-                    .Select(box => (double.TryParse(box.Text, out var result)? result : 0))
-                    .ToArray(),
-                Stroke = new SolidColorPaint(SKColors.MediumPurple){ StrokeThickness = 6 },
-                GeometrySize = 10,
-                GeometryStroke = new SolidColorPaint(SKColors.MediumPurple),
-                GeometryFill = new SolidColorPaint(SKColors.WhiteSmoke),
-                LineSmoothness = 0,
-                Fill = null,
-            },
-        };
+        _lineSeries.Values = NumTextBoxes.Where((box, index) => index != _tailIndex)
+            .Select(box => (double.TryParse(box.Text, out var result) ? result : 0))
+            .ToArray();
     }
     
     private void AddTextBox(object sender, KeyEventArgs e)
