@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Security;
+using System.Numerics;
 using ReactiveUI;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -14,7 +17,7 @@ public partial class LoginViewModel : ViewModelBase
     private string _password;
     private string _errorText;
 
-    private const string _emailSuffix = "a";
+    private List<string> _emailSuffix = new List<string> { "@", "." };
     
     private HttpService _httpService;
     
@@ -59,9 +62,9 @@ public partial class LoginViewModel : ViewModelBase
             return;
         }
 
-        if (!Email.Contains(_emailSuffix))
+        if (!_emailSuffix.All(suffix => Email.Contains(suffix)))
         {
-            ErrorText= "Please input an correct email address.";
+            ErrorText = "Please input a correct email address.";
             return;
         }
         
