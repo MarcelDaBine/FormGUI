@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Net.Security;
 using ReactiveUI;
 using System.Reactive;
+using System.Threading.Tasks;
+using SquadGUI.Services;
 
 namespace SquadGUI.ViewModels;
 
@@ -11,6 +15,8 @@ public partial class LoginViewModel : ViewModelBase
     private string _errorText;
 
     private const string _emailSuffix = "a";
+    
+    private HttpService _httpService;
     
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
     
@@ -42,6 +48,7 @@ public partial class LoginViewModel : ViewModelBase
         _email = string.Empty;
         _errorText = string.Empty;
         _password = string.Empty;
+        _httpService = new HttpService();
     }
     
     private void LoginLogic()
@@ -55,6 +62,14 @@ public partial class LoginViewModel : ViewModelBase
         if (!Email.Contains(_emailSuffix))
         {
             ErrorText= "Please input an correct email address.";
+            return;
+        }
+        
+        var authResult = Task.Run(() => _httpService.Authenticate(Email,Password));
+
+        if (!authResult.Result)
+        {
+            ErrorText = "Login unsuccessful!";
             return;
         }
 
