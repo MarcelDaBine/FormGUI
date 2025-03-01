@@ -27,7 +27,15 @@ public class DashboardViewModel : ViewModelBase
     private Axis _yAxis;
     private List<Axis> _axisList;
     private LineSeries<double> _lineSeries;
-    
+
+    private bool _isPaneOpenAttribute;
+
+    public bool IsPaneOpenAttribute 
+    {
+        get => _isPaneOpenAttribute;
+        set => this.RaiseAndSetIfChanged(ref _isPaneOpenAttribute, value); 
+    }
+
     public int NumBoxCount
     {
         get => _numBoxCount;
@@ -61,9 +69,12 @@ public class DashboardViewModel : ViewModelBase
         get => _axisList;
     }
     public ReactiveCommand<Unit, Unit> ResetButtonCommand { get; }
+    public ReactiveCommand<Unit, Unit> TogglePaneCommand { get; }
 
     public DashboardViewModel()
     {
+        IsPaneOpenAttribute = false;
+        
         _yAxis = new Axis()
         {
             MinLimit = 0,
@@ -81,10 +92,11 @@ public class DashboardViewModel : ViewModelBase
 
             Fill = null,
         };
-
+        
         Series = new ISeries[] { _lineSeries };
         
         ResetButtonCommand = ReactiveCommand.Create(ResetButton_OnClick);
+        TogglePaneCommand = ReactiveCommand.Create(TogglePane);
         
         NumTextBoxesSetup();
         
@@ -142,7 +154,6 @@ public class DashboardViewModel : ViewModelBase
             {
                 NumTextBoxes[NumTextBoxes.IndexOf(sender as NumTextBox) + 1].Focus();
             }
-            
             return;
         }
         
@@ -174,5 +185,10 @@ public class DashboardViewModel : ViewModelBase
         NumBoxCount = NumTextBoxes.Count; 
         
         UpdateSeries();
+    }
+
+    private void TogglePane()
+    {
+        IsPaneOpenAttribute = !IsPaneOpenAttribute;
     }
 }

@@ -31,12 +31,20 @@ public class NumTextBox : TextBox
     }
 
     private bool IsNumeric(string text)
-    {
-        return double.TryParse(text, out _);
+    { 
+        double num;
+        double.TryParse(this.Text + text, out num);
+
+        if (num <= 1200)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private bool IsNumericKey(Key key)
     {
-        return (key >= Key.D0 && key <= Key.D9) || (key >= Key.NumPad0 && key <= Key.NumPad9) || key == Key.Decimal || key == Key.OemPeriod || key == Key.Subtract || key == Key.OemMinus || key == Key.Back || key == Key.Enter;
+        return (key >= Key.D0 && key <= Key.D9) || (key >= Key.NumPad0 && key <= Key.NumPad9) || key == Key.Decimal || key == Key.OemPeriod || key == Key.Subtract || key == Key.Back || key == Key.Enter;
     }
 }

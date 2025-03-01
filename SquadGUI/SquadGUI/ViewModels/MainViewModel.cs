@@ -17,8 +17,8 @@ public class MainViewModel: ViewModelBase
 
     public MainViewModel()
     {
-        CurrentViewModel = new LoginViewModel(SwitchToDashboard);
-        //CurrentViewModel = new DashboardViewModel();
+        //CurrentViewModel = new LoginViewModel(SwitchToDashboard);
+        CurrentViewModel = new DashboardViewModel();
     }
 
     private void SwitchToDashboard()

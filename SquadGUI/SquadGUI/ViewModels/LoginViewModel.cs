@@ -17,9 +17,9 @@ public partial class LoginViewModel : ViewModelBase
     private string _password;
     private string _errorText;
 
-    private List<string> _emailSuffix = new List<string> { "@", "." };
+    private readonly List<string> _emailSuffix = new List<string> { "@", "." };
     
-    private HttpService _httpService;
+    private readonly HttpService _httpService;
     
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
     
@@ -70,9 +70,9 @@ public partial class LoginViewModel : ViewModelBase
         
         var authResult = Task.Run(() => _httpService.Authenticate(Email,Password));
 
-        if (!authResult.Result)
+        if (authResult.Result != "Success")
         {
-            ErrorText = "Login unsuccessful!";
+            ErrorText = authResult.Result;
             return;
         }
 

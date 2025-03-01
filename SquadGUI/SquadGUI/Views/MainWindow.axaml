@@ -9,8 +9,12 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="SquadGUI"
         MinHeight="850"
-        MinWidth="600">
-    
+        MinWidth="600"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        SystemDecorations="BorderOnly"
+        >
     <TransitioningContentControl Content="{Binding CurrentViewModel, DataType=vm:MainViewModel}">
         <TransitioningContentControl.PageTransition>
             <CrossFade Duration="0.6"/>
