@@ -9,29 +9,22 @@
     <UserControl.Styles>
         <StyleInclude Source="/Assets/MenuIcon.axaml"></StyleInclude>
     </UserControl.Styles>
-    <Grid ColumnDefinitions="5*,90*,5*,5*,5*">
-        <Button 
-            Name="Menu"
-            Height="35"
-            Width="35"
-            Command="{Binding TogglePaneCommand}">
-            <PathIcon Data="{DynamicResource LineHorizontal3Regular}"/>
-        </Button>
-        <Button Grid.Column="2" 
+    <Grid ColumnDefinitions="90*,5*,5*,5*">
+        <Button Grid.Column="1" 
                 Name="Minimize"
                 Click="Minimize_OnClick"
                 Height="35"
                 Width="35">
             <PathIcon Data="{DynamicResource LineHorizontal1Regular}"/>
         </Button>
-        <Button Grid.Column="3" 
+        <Button Grid.Column="2" 
                 Name="Tabs"
                 Click="Tabs_OnClick"
                 Height="35"
                 Width="35">
             <PathIcon Name="TabsIcon" Data="{DynamicResource TabsRegular}"/>
         </Button>
-        <Button Grid.Column="4" 
+        <Button Grid.Column="3" 
                 Name="Close"
                 Click="Close_OnClick"
                 Height="35"

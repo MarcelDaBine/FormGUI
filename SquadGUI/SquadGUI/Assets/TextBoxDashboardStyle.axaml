@@ -6,6 +6,7 @@
         </Border>
     </Design.PreviewWith>
     
+    <!-- Dashboard TextBox style-->
         <Style Selector="TextBox">
             <Setter Property="Watermark" Value="Input..."/>
             <Setter Property="MaxHeight" Value="6"/>

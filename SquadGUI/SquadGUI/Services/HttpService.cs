@@ -8,17 +8,28 @@ using System.Text.Json.Serialization;
 
 namespace SquadGUI.Services;
 
+// Class responsible for handling HTTP requests and authentication
 public class HttpService
 {
     private readonly HttpClient _httpClient;
     private readonly string _url;
 
+    // Constructor initializes HttpClient and sets the authentication URL
     public HttpService()
     {
         _httpClient = new HttpClient();
         _url = "http://localhost:8090/api/v1/auth/authenticate";
     }
+
+    // Method to authenticate user with email and password
+    /// <summary>
+    /// Authenticates a user with their email and password.
+    /// </summary>
+    /// <param name="email">The user's email address</param>
+    /// <param name="password">The user's password</param>
+    /// <returns>A string containing the authentication response or error message</returns>
     public async Task<string> Authenticate(string email, string password)
+
     {
         try
         {
@@ -46,6 +57,7 @@ public class HttpService
         
     }
     
+    // Helper method to convert API response to user-friendly message
     private string ResponseToString(string response)
     {
         switch (response.Substring(1, response.Length - 2))

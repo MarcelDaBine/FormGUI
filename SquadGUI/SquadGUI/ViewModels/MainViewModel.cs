@@ -9,6 +9,7 @@ public class MainViewModel: ViewModelBase
 {
     private ViewModelBase _currentViewModel;
 
+    //CurrentViewModel holds the viewmodel that is displayed
     public ViewModelBase CurrentViewModel
     {
         get => _currentViewModel;
@@ -22,7 +23,7 @@ public class MainViewModel: ViewModelBase
     }
 
     private void SwitchToDashboard()
-    {
+    { 
         CurrentViewModel = new DashboardViewModel();
     }
 }

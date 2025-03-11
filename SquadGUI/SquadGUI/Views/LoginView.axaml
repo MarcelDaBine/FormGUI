@@ -3,17 +3,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SquadGUI.ViewModels"
+             xmlns:views="clr-namespace:SquadGUI.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SquadGUI.Views.LoginView"
              x:DataType="vm:LoginViewModel">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:LoginViewModel />
+        <vm:LoginViewModel/>
     </Design.DataContext>
 
-    <Grid RowDefinitions="38*, 6*, 6*, 6*, 6* ,38*" ColumnDefinitions="*,*,*">
-        <TextBox Grid.Row="1" Grid.Column="1"
+    <Grid RowDefinitions="5*, 38*, 6*, 6*, 6*, 6* ,38*" ColumnDefinitions="*,*,*">
+        <views:CustomTitleBar Grid.Row="0" Grid.ColumnSpan="3"/>
+        <TextBox Grid.Row="2" Grid.Column="1"
                  x:Name="EmailBox"
                  MaxHeight="6" 
                  MinWidth="250" MaxWidth="300"
@@ -24,7 +26,7 @@
                  KeyDown="EmailBox_OnKeyDown"
                  Text="{Binding Email}"/>
         
-        <TextBox Grid.Row="2" Grid.Column="1"
+        <TextBox Grid.Row="3" Grid.Column="1"
                  x:Name="PassBox"
                  MaxHeight="6" 
                  MinWidth="250" MaxWidth="300"
@@ -36,7 +38,7 @@
                  KeyDown="PassBox_OnKeyDown"
                  Text="{Binding Password}"/>
         
-        <Button Grid.Row="3" Grid.Column="1"
+        <Button Grid.Row="4" Grid.Column="1"
                 x:Name="SubmitButton"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -45,7 +47,7 @@
             submit
         </Button>
         
-        <TextBlock Grid.Row="4" Grid.Column="1"
+        <TextBlock Grid.Row="5" Grid.Column="1"
                x:Name="ErrorBlock"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"

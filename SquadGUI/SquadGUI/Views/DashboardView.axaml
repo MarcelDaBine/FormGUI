@@ -22,42 +22,110 @@
         <StyleInclude Source="/Assets/MenuIcon.axaml"/>
     </UserControl.Styles>
     
-    <Grid RowDefinitions="5*,95*">
-            <!-- TO DO--> 
-            <views:CustomTitleBar></views:CustomTitleBar>
-        <SplitView Grid.Row="1"
+    <Grid>
+        <views:CustomTitleBar ZIndex="1"/>
+        <SplitView
                    PanePlacement="Left"
                    OpenPaneLength="500"
                    x:Name="MenuPane"
-                   IsPaneOpen="{Binding IsPaneOpenAttribute}">
+                   IsPaneOpen="{Binding IsPaneOpenAttribute}"
+                   ZIndex="0"
+                   DisplayMode="CompactOverlay">
+            <!--Side menu implementation-->
             <SplitView.Pane>
-                <Button VerticalContentAlignment="Center"
-                        HorizontalContentAlignment="Center">-</Button>
+                <Button
+                        Name="MenuPaneButton"
+                        Height="35"
+                        Width="35"
+                        Command="{Binding TogglePaneCommand}"
+                        HorizontalAlignment="Left">
+                    <PathIcon Data="{DynamicResource LineHorizontal3Regular}"/>
+                </Button>
             </SplitView.Pane>
-            <SplitView.Content>
-                <Grid ColumnDefinitions="30*, 70*" RowDefinitions="5*,70*,20*,5*">
-                    <!-- The textboxes of the chart-->
-                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Visible">
-                        <ItemsControl x:Name="Control" ItemsSource="{Binding NumTextBoxes}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                        <control:NumTextBox Text="{Binding Text}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-        
-                    <lvc:CartesianChart Grid.Column="1" Grid.Row="1" Grid.RowSpan="2"
-                                x:Name="Chart"
-                                Series="{Binding Series}"
-                                YAxes="{Binding AxisList}"
-                                AnimationsSpeed="00:00:00.300">
-                    </lvc:CartesianChart>
             
-                    <Button Grid.Column="0" Grid.Row="2" 
-                            x:Name="ResetButton"
-                            Command="{Binding ResetButtonCommand}"/>
-                </Grid>
+            <SplitView.Content>
+                <Grid RowDefinitions="5*,45*,45*,5*">
+                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Visible">
+                        <!-- The options for the form-->
+                        <Grid ColumnDefinitions="*,*,*,*,*" RowDefinitions="10*,90*">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Text="Shot"/>
+                            <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Text="Load"/>
+                            <TextBlock Grid.Column="2"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Text="Str.Vel. Ft/s"/>
+                            <TextBlock Grid.Column="3"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Text="PP/CP"/>
+                            <TextBlock Grid.Column="4"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Text="Used"/>
+                            <ItemsControl Grid.Row="1" x:Name="NumberControl" 
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          ItemsSource="{Binding  TextBlocks}"/>
+                            <ItemsControl Grid.Row="1" 
+                                          Grid.Column="1" x:Name="LoadControl"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          ItemsSource="{Binding LoadNumTextBoxes}"/>
+                                    
+                            <ItemsControl Grid.Row="1" Grid.Column="2" 
+                                          x:Name="Control" 
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          ItemsSource="{Binding  NumVelTextBoxes}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <control:NumTextBox Text="{Binding Text}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                                    
+                            <ItemsControl Grid.Row="1" Grid.Column="3" 
+                                          x:Name="ComboControl" 
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          ItemsSource="{Binding ComboBoxes}"/>
+                            <ItemsControl Grid.Row="1" Grid.Column="4"
+                                          x:Name="UsedControl" 
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          ItemsSource="{Binding UsedBlocks}"></ItemsControl>
+                        </Grid>
+                        </ScrollViewer>
+                        <Grid Grid.Row="2" ColumnDefinitions="70*,15*,15*">
+                        <!--chart-->
+                        <lvc:CartesianChart  
+                                    x:Name="Chart"
+                                    Series="{Binding Series}"
+                                    YAxes="{Binding AxisList}"
+                                    AnimationsSpeed="00:00:00.100">
+                        </lvc:CartesianChart>
+                
+                        <TextBlock Grid.Column="1"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Text="{Binding DebugChartMsg}"/>
+                        <TextBlock Grid.Column="2"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Text="{Binding MeanValue}"/>
+                        <!--
+                        <Button Grid.Column="0" Grid.Row="3" 
+                                x:Name="ResetButton"
+                                Command="{Binding ResetButtonCommand}"/>
+                        -->
+                        </Grid>
+                    </Grid>
             </SplitView.Content>
         </SplitView>
     </Grid>
