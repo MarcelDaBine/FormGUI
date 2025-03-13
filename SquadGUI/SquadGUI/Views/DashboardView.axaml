@@ -62,42 +62,38 @@
                     
                     <Grid Grid.Row="1">
                         <Grid RowDefinitions="*,*,*,*,*,*,*,*,*,*"
-                              ColumnDefinitions="*,*,*,*,*,*"
+                              ColumnDefinitions="150,200,150,200,150,200"
                               HorizontalAlignment="Stretch"
                               Margin="20">
         
-                            <!-- Row 1 -->
-                            <TextBlock Text="Date:" Grid.Row="0" Grid.Column="0"/>
-                            <TextBox Text="{Binding DateText}" Grid.Row="0" Grid.Column="1"/>
-                            <TextBlock Text="Shooter:" Grid.Row="0" Grid.Column="2"/>
-                            <TextBox Text="" Grid.Row="0" Grid.Column="3"/>
-                            <TextBlock Text="Lot No:" Grid.Row="0" Grid.Column="4"/>
-                            <TextBox Text="4" Grid.Row="0" Grid.Column="5"/>
-                            
+                           <!-- Row 1 -->
+                            <TextBlock Text="Date:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5"/>
+                            <TextBox Text="{Binding DateText}" Grid.Row="0" Grid.Column="1" Width="180" HorizontalAlignment="Left" Margin="5"/>
+                            <TextBlock Text="Shooter:" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5"/>
+                            <TextBox Text="" Grid.Row="0" Grid.Column="3" Width="180" HorizontalAlignment="Left" Margin="5"/>
+                            <TextBlock Text="Lot No:" Grid.Row="0" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5"/>
+                            <TextBox Text="4" Grid.Row="0" Grid.Column="5" Width="180" HorizontalAlignment="Left" Margin="5"/>
                             
                             <!-- Row 2 -->
-                            <TextBlock Text="Time:" Grid.Row="1" Grid.Column="0"/>
-                            <TextBox Text="" Grid.Row="1" Grid.Column="1"/>
-                            <TextBlock Text="Recorder:" Grid.Row="1" Grid.Column="2"/>
-                            <TextBox Text="" Grid.Row="1" Grid.Column="3"/>
-                            <TextBlock Text="Client:" Grid.Row="1" Grid.Column="4"/>
-                            <TextBox Text="" Grid.Row="1" Grid.Column="5"/>
-                            
-                            
+                            <TextBlock Text="Time:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5"/>
+                            <TextBox Text="" Grid.Row="1" Grid.Column="1" Width="180" HorizontalAlignment="Left" Margin="5"/>
+                            <TextBlock Text="Recorder:" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5"/>
+                            <TextBox Text="" Grid.Row="1" Grid.Column="3" Width="180" HorizontalAlignment="Left" Margin="5"/>
+                            <TextBlock Text="Client:" Grid.Row="1" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5"/>
+                            <TextBox Text="" Grid.Row="1" Grid.Column="5" Width="180" HorizontalAlignment="Left" Margin="5"/>
+
                             <!-- Row 3 -->
-                            <TextBlock Text="Report Number:" Grid.Row="2" Grid.Column="4"/>
-                            <TextBox Text="" Grid.Row="2" Grid.Column="5"/>
-                            
-        
+                            <TextBlock Text="Report Number:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5"/>
+                            <TextBox Text="" Grid.Row="2" Grid.Column="1" Width="180" HorizontalAlignment="Left" Margin="5" Grid.ColumnSpan="5"/>
+
                             <!-- Row 4 -->
-                            <TextBlock Text="Temperature:" Grid.Row="3" Grid.Column="0"/>
-                            <TextBox Text="" Grid.Row="3" Grid.Column="1"/>
-                            <TextBox Text="" Grid.Row="3" Grid.Column="2"/>
-                            
-        
+                            <TextBlock Text="Temperature:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5"/>
+                            <TextBox Text="" Grid.Row="3" Grid.Column="1" Width="180" HorizontalAlignment="Left" Margin="5"/>
+                            <TextBox Text="" Grid.Row="3" Grid.Column="3" Width="180" HorizontalAlignment="Left" Margin="5"/>
+
                             <!-- Row 5 -->
-                            <TextBlock Text="Humidity:" Grid.Row="4" Grid.Column="0"/>
-                            <TextBox Text="" Grid.Row="4" Grid.Column="1"/>
+                            <TextBlock Text="Humidity:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5"/>
+                            <TextBox Text="" Grid.Row="4" Grid.Column="1" Width="180" HorizontalAlignment="Left" Margin="5"/>
         
                             <!-- Final Separator Line -->
                             <Border Grid.Row="5" Grid.ColumnSpan="6" 
