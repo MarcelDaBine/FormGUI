@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 
@@ -10,6 +11,7 @@ namespace SquadGUI.Assets;
 public class FloatNumTextBox : TextBox
 {
     protected override Type StyleKeyOverride => typeof(TextBox);
+    private int _dotPosition = -1;
     
     /// <summary>
     /// Handles text input events to ensure only numeric values that are smaller than 2700 are entered
@@ -22,6 +24,8 @@ public class FloatNumTextBox : TextBox
             return;
         }
 
+        e.Text = FormatNumber(e.Text);
+        
         base.OnTextInput(e);
     }
 
@@ -63,5 +67,16 @@ public class FloatNumTextBox : TextBox
     private bool IsNumericKey(Key key)
     {
         return (key >= Key.D0 && key <= Key.D9) || (key >= Key.NumPad0 && key <= Key.NumPad9) || key == Key.OemPeriod || key == Key.Decimal || key == Key.Subtract || key == Key.Back || key == Key.Enter;
+    }
+
+    private string FormatNumber(string number)
+    {
+        var temp = (Text + number).Split('.');
+        if (number == "." || temp.Length == 1)
+        {
+            return number;
+        }
+        
+        return temp[1].Length > 3 ? "" : number;
     }
 }

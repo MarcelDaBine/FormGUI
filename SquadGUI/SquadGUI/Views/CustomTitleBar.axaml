@@ -8,28 +8,35 @@
              x:DataType="vm:DashboardViewModel">
     <UserControl.Styles>
         <StyleInclude Source="/Assets/MenuIcon.axaml"></StyleInclude>
+        <Style Selector="Button">
+            <Setter Property="Width" Value="35"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="CornerRadius" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
     </UserControl.Styles>
-    <Grid ColumnDefinitions="90*,5*,5*,5*">
-        <Button Grid.Column="1" 
-                Name="Minimize"
-                Click="Minimize_OnClick"
-                Height="35"
-                Width="35">
+    <Grid>
+        <Rectangle Height="35" 
+                           Grid.ColumnSpan="4"
+                           Fill="Black"
+                           VerticalAlignment="Top"
+                           ZIndex="0"/>
+        <Grid ColumnDefinitions="*,35,35,35" >
+            <Button Grid.Column="1" 
+                            Name="Minimize"
+                            Click="Minimize_OnClick">
             <PathIcon Data="{DynamicResource LineHorizontal1Regular}"/>
-        </Button>
-        <Button Grid.Column="2" 
-                Name="Tabs"
-                Click="Tabs_OnClick"
-                Height="35"
-                Width="35">
-            <PathIcon Name="TabsIcon" Data="{DynamicResource TabsRegular}"/>
-        </Button>
-        <Button Grid.Column="3" 
-                Name="Close"
-                Click="Close_OnClick"
-                Height="35"
-                Width="35">
-            <PathIcon Data="{DynamicResource CloseRegular}"></PathIcon>
-        </Button>
+            </Button>
+            <Button Grid.Column="2" 
+                    Name="Tabs"
+                    Click="Tabs_OnClick">
+                <PathIcon Name="TabsIcon" Data="{DynamicResource TabsRegular}"/>
+            </Button>
+            <Button Grid.Column="3" 
+                    Name="Close"
+                    Click="Close_OnClick">
+                <PathIcon Data="{DynamicResource CloseRegular}"></PathIcon>
+            </Button>
+        </Grid>
     </Grid>
 </UserControl>

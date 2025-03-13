@@ -2,13 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
+using System.Net.Mime;
 using System.Reactive;
+using System.Runtime.InteropServices.JavaScript;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Xaml.Interactions.Custom;
 using DynamicData;
 using DynamicData.Binding;
@@ -20,20 +25,23 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using SquadGUI.Assets;
 using Avalonia.Media;
+using SquadGUI.Assets;
 
 namespace SquadGUI.ViewModels;
 
 public class DashboardViewModel : ViewModelBase
 {
     private const int ChartItemsCount = 6;
-    private Dictionary<FloatNumTextBox, double> ppSortedList;
-    private Dictionary<FloatNumTextBox, double> cpDeSortedList;
+    private Dictionary<FloatNumTextBox, double> _ppList;
+    private Dictionary<FloatNumTextBox, double> _cpList;
     
     private ObservableCollection<FloatNumTextBox> _numVelNumVelTextBoxes;
-    private ObservableCollection<PpcpComboBox> _comboBoxes;
+    private ObservableCollection<PpcpComboBox> _pcpComboBoxes;
     private ObservableCollection<Border> _textBlocks;
-    private ObservableCollection<TextBlock> _usedBlocks;
+    private ObservableCollection<Border> _usedBlocks;
     private ObservableCollection<NumTextBox> _loadNumTextBoxes;
+    private ObservableCollection<ComboBox> _posComboBoxes;
+    private ObservableCollection<TextBox> _msTextBoxes;
     
     private ISeries[] _series;
     private Axis _yAxis;
@@ -41,18 +49,37 @@ public class DashboardViewModel : ViewModelBase
     private readonly LineSeries<double> _lineSeries;
     private bool _isPaneOpenAttribute;
 
-    private string _meanValue;
+    private string _meanValueMs;
+    private string _meanValueFt;
     private string _debugChartMsg;
+    private string _dateText;
     
     //Button Commands
     public ReactiveCommand<Unit, Unit> ResetButtonCommand { get; }
     public ReactiveCommand<Unit, Unit> TogglePaneCommand { get; }
 
     //getters and setters
-    public string MeanValue
+
+    public string DateText
     {
-        get => _meanValue;
-        set => this.RaiseAndSetIfChanged(ref _meanValue, value);
+        get => _dateText;
+        set => this.RaiseAndSetIfChanged(ref _dateText, DateFormater(value));
+    }
+    public string MeanValueMs
+    {
+        get => _meanValueMs;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _meanValueMs, value);
+            Console.WriteLine(value);
+            MeanValueFt = double.TryParse(_meanValueMs, out var mean) ? ConvertMetersToFeet(mean).ToString("F3") : "aaaaaa";
+        }
+    }
+
+    public string MeanValueFt
+    {
+        get => _meanValueFt;
+        set => this.RaiseAndSetIfChanged(ref _meanValueFt, value);
     }
 
     public string DebugChartMsg
@@ -65,17 +92,22 @@ public class DashboardViewModel : ViewModelBase
         get => _isPaneOpenAttribute;
         set => this.RaiseAndSetIfChanged(ref _isPaneOpenAttribute, value); 
     }
-    
+
+    public ObservableCollection<ComboBox> PosComboBoxes
+    {
+        get => _posComboBoxes;
+        set => this.RaiseAndSetIfChanged(ref _posComboBoxes, value);
+    }
     public ObservableCollection<FloatNumTextBox> NumVelTextBoxes
     {
         get => _numVelNumVelTextBoxes;
         set => this.RaiseAndSetIfChanged(ref _numVelNumVelTextBoxes, value);
     }
 
-    public ObservableCollection<PpcpComboBox> ComboBoxes
+    public ObservableCollection<PpcpComboBox> PcpComboBoxes
     {
-        get => _comboBoxes;
-        set => this.RaiseAndSetIfChanged(ref _comboBoxes, value);
+        get => _pcpComboBoxes;
+        set => this.RaiseAndSetIfChanged(ref _pcpComboBoxes, value);
     }
 
     public ObservableCollection<Border> TextBlocks
@@ -90,10 +122,16 @@ public class DashboardViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _loadNumTextBoxes, value);
     }
 
-    public ObservableCollection<TextBlock> UsedBlocks
+    public ObservableCollection<Border> UsedBlocks
     {
         get => _usedBlocks;
         set => this.RaiseAndSetIfChanged(ref _usedBlocks, value);
+    }
+
+    public ObservableCollection<TextBox> MsTextBoxes
+    {
+        get => _msTextBoxes;
+        set => this.RaiseAndSetIfChanged(ref _msTextBoxes, value);
     }
     
     public ISeries[] Series
@@ -135,8 +173,8 @@ public class DashboardViewModel : ViewModelBase
         ResetButtonCommand = ReactiveCommand.Create(ResetButton_OnClick);
         TogglePaneCommand = ReactiveCommand.Create(TogglePane);
 
-        ppSortedList = new Dictionary<FloatNumTextBox, double>();
-        cpDeSortedList = new Dictionary<FloatNumTextBox, double>();
+        _ppList = new Dictionary<FloatNumTextBox, double>();
+        _cpList = new Dictionary<FloatNumTextBox, double>();
         
         ChartInputFieldSetup();
         UpdateChart();
@@ -155,11 +193,11 @@ public class DashboardViewModel : ViewModelBase
         }
         
         //setup the PP/CP combo boxes
-        ComboBoxes = new ObservableCollection<PpcpComboBox>();
+        PcpComboBoxes = new ObservableCollection<PpcpComboBox>();
 
         for (var i = 0; i < ChartItemsCount; ++i)
         {
-            AddComboBox();
+            AddPcpComboBox();
         }
         
         //setup the shot number in the graph
@@ -175,10 +213,22 @@ public class DashboardViewModel : ViewModelBase
             AddLoadNumTextBox();
         }
 
-        UsedBlocks = new ObservableCollection<TextBlock>();
+        UsedBlocks = new ObservableCollection<Border>();
         for (var i = 0; i < ChartItemsCount; i++)
         {
             AddUsedBlock();
+        }
+
+        PosComboBoxes = new ObservableCollection<ComboBox>();
+        for (var i = 0; i < ChartItemsCount; i++)
+        {
+            AddPosComboBox();
+        }
+
+        MsTextBoxes = new ObservableCollection<TextBox>();
+        for (var i = 0; i < ChartItemsCount; i++)
+        {
+            AddMsTextBox();
         }
     }
     
@@ -187,68 +237,77 @@ public class DashboardViewModel : ViewModelBase
     // </summary
     private void UpdateChart()
     {
-        if ((ComboBoxes.Count-1) % 2 != 0 && ComboBoxes.Count != 6)
+        if ((PcpComboBoxes.Count-1) % 2 != 0 && PcpComboBoxes.Count != 6)
         {
             _lineSeries.Values = new double[ChartItemsCount];
             DebugChartMsg = $"even number of shots needed";
             return;
         }
         
-        foreach (var box in ComboBoxes)
+        foreach (var box in PcpComboBoxes)
         {
             var b = box.SelectedItem?.ToString();
-            var c = NumVelTextBoxes[ComboBoxes.IndexOf(box)];
+            var c = NumVelTextBoxes[PcpComboBoxes.IndexOf(box)];
             if (b == "PP" && double.TryParse(c.Text, out var tempPP))
             {
-                cpDeSortedList.Remove(c);
-                if(!ppSortedList.ContainsKey(c)) // the warning is wrong, if you fix it and type in a box the program will crash
-                    ppSortedList.Add(c, tempPP);
-                else ppSortedList[c] = tempPP;
+                _cpList.Remove(c);
+                if(!_ppList.ContainsKey(c)) // the warning is wrong, if you fix it and type in a box the program will crash
+                    _ppList.Add(c, tempPP);
+                else _ppList[c] = tempPP;
             }
             else if (b == "CP" && double.TryParse(c.Text, out var tempCP))
             {
-                ppSortedList.Remove(c);
-                if(!cpDeSortedList.ContainsKey(c)) // the warning is wrong, if you fix it and type in a box the program will crash
-                    cpDeSortedList.Add(c, tempCP);
-                else cpDeSortedList[c] = tempCP;
+                _ppList.Remove(c);
+                if(!_cpList.ContainsKey(c)) // the warning is wrong, if you fix it and type in a box the program will crash
+                    _cpList.Add(c, tempCP);
+                else _cpList[c] = tempCP;
+            }
+            else
+            {
+                _ppList.Remove(c);
+                _cpList.Remove(c);
             }
         }
 
-        if (ppSortedList.Count >= 3 && cpDeSortedList.Count >= 3)
+        if (_ppList.Count >= 3 && _cpList.Count >= 3)
         {
-            var lowestCpList = cpDeSortedList.OrderBy(x => x.Value).ToList();
-            var highestPpList = ppSortedList.OrderByDescending(x => x.Value).ToList();
+            var lowestCpList = _cpList.OrderBy(x => x.Value).ToList();
+            var highestPpList = _ppList.OrderByDescending(x => x.Value).ToList();
 
-            switch (double.Abs(highestPpList.First().Value - lowestCpList.First().Value))
+            switch (DifferenceBetweenLists(lowestCpList.Take(3).ToList(), highestPpList.Take(3).ToList()))
             {
                 case <= 40:
-                    DebugChartMsg = $"ye";
-                    MeanValue = CalculateV50Mean(lowestCpList.Take(3).ToList(), highestPpList.Take(3).ToList()).ToString();
+                    DebugChartMsg = $"Worked";
+                    MeanValueMs = CalculateV50Mean(lowestCpList.Take(3).ToList(), highestPpList.Take(3).ToList()).ToString();
                     break;
                 case <= 50:
-                    if (ppSortedList.Count <= 5 && cpDeSortedList.Count <= 5)
+                    if (_ppList.Count <= 5 && _cpList.Count <= 5)
                     {
-                        DebugChartMsg = $"%50m/s difference between the highest pp shot and lowest cp shot so {5 - ppSortedList.Count} pp shots are needed and {5 - cpDeSortedList.Count}cp shots are needed";
+                        DebugChartMsg = $"%50m/s difference between the 3 highest pp shots and 3 lowest cp shot so {5 - _ppList.Count} pp shots are needed and {5 - _cpList.Count} cp shots are needed";
                         break;
                     }
-                    MeanValue = CalculateV50Mean(lowestCpList.Take(5).ToList(), highestPpList.Take(5).ToList()).ToString();
+                    DebugChartMsg = "Worked";
+                    MeanValueMs = CalculateV50Mean(lowestCpList.Take(5).ToList(), highestPpList.Take(5).ToList()).ToString();
                     break;
                 case <= 60:
-                    if (ppSortedList.Count <= 7 && cpDeSortedList.Count <= 7)
+                    if (_ppList.Count <= 7 && _cpList.Count <= 7)
                     {
-                        DebugChartMsg = $"60m/s difference between the highest pp shot and lowest cp shot so{7 - ppSortedList.Count} pp shots are needed and {7 - cpDeSortedList.Count}cp shots are needed";
+                        DebugChartMsg = $"60m/s difference between the highest pp shot and lowest cp shot so {7 - _ppList.Count} pp shots are needed and {7 - _cpList.Count} cp shots are needed";
                         break;
                     }
-                    MeanValue = CalculateV50Mean(lowestCpList.Take(7).ToList(), highestPpList.Take(7).ToList()).ToString();
+                    DebugChartMsg = "Worked";
+                    MeanValueMs = CalculateV50Mean(lowestCpList.Take(7).ToList(), highestPpList.Take(7).ToList()).ToString();
                     break;
                 default:
-                    DebugChartMsg = $"tf";
+                    DebugChartMsg = $"How Did We Get Here...";
+                    MeanValueMs = "";
                     break;
             }
         }
         else
         {
-            DebugChartMsg = $"no";
+            DebugChartMsg = $"At least 3 pp and 3 cp shots are needed";
+            MeanValueMs = "";
         }
         _lineSeries.Values = NumVelTextBoxes.Where((box) => box!=NumVelTextBoxes.Last())
             .Select(box => (double.TryParse(box.Text, out var result) ? result : 0))
@@ -290,13 +349,13 @@ public class DashboardViewModel : ViewModelBase
                 return;
             
             case ComboBox comboBox:
-                if (comboBox == ComboBoxes.Last())
+                if (comboBox == PcpComboBoxes.Last())
                 {
                     break;
                 }
                 if ((e as SelectionChangedEventArgs)?.AddedItems.Count > 0)
                 {
-                    ComboBoxes[ComboBoxes.IndexOf(comboBox) + 1].Focus();
+                    PcpComboBoxes[PcpComboBoxes.IndexOf(comboBox) + 1].Focus();
                 }
                 return;
             case FloatNumTextBox floatNumTextBox:
@@ -324,11 +383,13 @@ public class DashboardViewModel : ViewModelBase
                 return;
                 
         }
-        AddComboBox();
+        AddPcpComboBox();
         AddVelocityNumTextBox();
         AddTextBlock();
         AddLoadNumTextBox();
         AddUsedBlock();
+        AddPosComboBox();
+        AddMsTextBox();
     }
 
     private void AddVelocityNumTextBox()
@@ -342,17 +403,27 @@ public class DashboardViewModel : ViewModelBase
             {
                 return;
             }
+
+            if (double.TryParse(numTextBox.Text, out var feet))
+            {
+                var meters = ConvertFeetToMeters(feet);
+                MsTextBoxes[NumVelTextBoxes.IndexOf(numTextBox)].Text = meters.ToString("F3");
+            }
+            else
+            {
+                MsTextBoxes[NumVelTextBoxes.IndexOf(numTextBox)].Text = "";
+            }
             UpdateChart();
         });
         NumVelTextBoxes.Add(numTextBox);
     }
-    private void AddComboBox()
+    private void AddPcpComboBox()
     {
         var box = new PpcpComboBox()
         {
             Width = 100,
             Height = 30,
-            Margin = Avalonia.Thickness.Parse("10"),
+            Margin = Thickness.Parse("10"),
             Items = { "PP", "CP", "N/A" }
         };
         
@@ -368,30 +439,40 @@ public class DashboardViewModel : ViewModelBase
         {
             UpdateChart();
         };
-        ComboBoxes.Add(box);
+        PcpComboBoxes.Add(box);
     }
 
     private void AddTextBlock()
     {
         var border = new Border
         {
-            BorderThickness = new Avalonia.Thickness(2),
-            BorderBrush = Brushes.LightGray, 
-            Padding = new Avalonia.Thickness(1),
-            Margin = new Avalonia.Thickness(0,10,0,10),
-            Width = 100,
-            Height = 30, 
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             Child = new TextBlock
             {
-                Margin = new Avalonia.Thickness(90,10,0,0),
-                Width = 100,
-                Height = 30,
                 Text = (TextBlocks.Count + 1).ToString(),
             }
         };
+        border.Classes.Add("TextBlockBorder");
         TextBlocks.Add(border);
+    }
+
+    private void AddPosComboBox()
+    {
+        var posComboBox = new ComboBox()
+        {
+            Width = 100,
+            Height = 30,
+            Margin = Thickness.Parse("10"),
+            Items = { "Crown", "Back", "Left", "Right", "Front" }
+        };
+        posComboBox.PointerPressed += (sender, e) =>
+        {
+            if (sender is ComboBox cb)
+            {
+                cb.IsDropDownOpen = true;
+                AddButtons(sender, e);
+            }
+        };
+        PosComboBoxes.Add(posComboBox);
     }
 
     private void AddLoadNumTextBox()
@@ -402,28 +483,39 @@ public class DashboardViewModel : ViewModelBase
     }
     
     private void AddUsedBlock()
-    { 
-        var textBox = new TextBlock()
+    {
+        var border = new Border()
         {
-            Margin = new Avalonia.Thickness(90,10,0,0),
-            Text = "",
-            VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
+            Child = new TextBlock()
+            {
+                Text = "",
+            }
         };
-        UsedBlocks.Add(textBox);
+        border.Classes.Add("TextBlockBorder");
+        UsedBlocks.Add(border);
     }
 
-    private void UpdateUsedBlock()
+    private void AddMsTextBox()
     {
-        for (var i = 0; i < NumVelTextBoxes.Count; ++i)
+        var textBox = new TextBox()
         {
-            if (ppSortedList.ContainsKey(NumVelTextBoxes[i]) || cpDeSortedList.ContainsKey(NumVelTextBoxes[i]))
+            IsEnabled = false,
+            Watermark = "",
+        };
+        MsTextBoxes.Add(textBox);
+    }
+
+    private void UpdateUsedBlock(List<KeyValuePair<FloatNumTextBox,double>> cp, List<KeyValuePair<FloatNumTextBox,double>> pp)
+    {
+        for (var i = 0; i < NumVelTextBoxes.Count - 1; ++i)
+        {
+            if (pp.Any((pair) => { return pair.Key == NumVelTextBoxes[i];}) || cp.Any((pair) => { return pair.Key == NumVelTextBoxes[i];}))
             {
-                UsedBlocks[i].Text = "Y";
+                ((TextBlock)UsedBlocks[i].Child).Text = "Y";
             }
             else
             {
-                UsedBlocks[i].Text = "N";
+                ((TextBlock)UsedBlocks[i].Child).Text = "N";
             }
         }
     }
@@ -431,8 +523,9 @@ public class DashboardViewModel : ViewModelBase
     // <summary>
     // Calculates the V50Mean based on the values of the cp and pc lists. It also updates the text of the Used column.
     // </summary>
-    // <param name="pp">The first N (size based on the rules of the V50) NumVelTextBoxes from the pp list and their values.
-    // <param name="cp">The first N (size based on the rules of the V50) NumVelTextBoxes from the cp list and their values.
+    // <param name="size"> The first N (size based on the rules of the V50) numbers. 
+    // <param name="pp"> The first N NumVelTextBoxes from the pp list and their values.
+    // <param name="cp"> The first N NumVelTextBoxes from the cp list and their values.
     // <returns> A double containing the 
     private double CalculateV50Mean(List<KeyValuePair<FloatNumTextBox,double>> cp, List<KeyValuePair<FloatNumTextBox,double>> pp)
     {
@@ -442,7 +535,37 @@ public class DashboardViewModel : ViewModelBase
             sum += cp[i].Value;
             sum += pp[i].Value;
         }
-        UpdateUsedBlock();
-        return sum / (pp.Count + cp.Count);
+        UpdateUsedBlock(cp, pp);
+        return ConvertFeetToMeters(sum) / (pp.Count + cp.Count);
     }
-}    //}
+
+    private static double DifferenceBetweenLists(List<KeyValuePair<FloatNumTextBox, double>> cp, List<KeyValuePair<FloatNumTextBox, double>> pp)
+    {
+        double max = 0, temp;
+        for (int i = 0; i < cp.Count; i++)
+        {
+            temp = ConvertFeetToMeters(double.Abs(cp[i].Value - pp[i].Value));
+            if(temp > max)
+                max = temp;
+        }
+        return max;
+    }
+
+    private static double ConvertFeetToMeters(double feet)
+    {
+        return feet * 0.3048;
+    }
+    private static double ConvertMetersToFeet(double meters)
+    {
+        return meters / 0.3048;
+    }
+
+    private string DateFormater(string input)
+    {
+        if (DateTime.TryParse(input, out DateTime date))
+        {
+            return date.ToString("dd-MM-yyyy");
+        }
+        return input;
+    }
+}   

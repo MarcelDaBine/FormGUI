@@ -20,16 +20,17 @@
         <StyleInclude Source="/Assets/TextBoxDashboardStyle.axaml"/>
         <StyleInclude Source="/Assets/ButtonDashboardStyle.axaml"/>
         <StyleInclude Source="/Assets/MenuIcon.axaml"/>
+        <StyleInclude Source="/Assets/TextBlockStyle.axaml"/>
     </UserControl.Styles>
     
-    <Grid>
-        <views:CustomTitleBar ZIndex="1"/>
-        <SplitView
+    <Grid RowDefinitions="5*,95*">
+        <views:CustomTitleBar ZIndex="2"/>
+        <SplitView Grid.Row="1"
                    PanePlacement="Left"
                    OpenPaneLength="500"
                    x:Name="MenuPane"
                    IsPaneOpen="{Binding IsPaneOpenAttribute}"
-                   ZIndex="0"
+                   ZIndex="1"
                    DisplayMode="CompactOverlay">
             <!--Side menu implementation-->
             <SplitView.Pane>
@@ -44,7 +45,8 @@
             </SplitView.Pane>
             
             <SplitView.Content>
-                <Grid RowDefinitions="Auto,Auto,1.5*,0.7*"><!--5*,45*,45*,5*-->
+                <ScrollViewer>
+                <Grid RowDefinitions="Auto,Auto,*,*,*,*"><!--5*,45*,45*,5*-->
                     
                     <Grid>
                         <TextBlock Text="Galvion Inc. Limit Test Report" 
@@ -52,56 +54,63 @@
                                            FontWeight="Bold" 
                                            HorizontalAlignment="Center" 
                                            Margin="0,10,0,10"/>
-                        <Border Grid.Row="0" Grid.ColumnSpan="6" BorderBrush="White" BorderThickness="0,0,0,1" Margin="0,10,0,0"/>
+                        <Border Grid.Row="0" Grid.ColumnSpan="6" 
+                                BorderBrush="White" 
+                                BorderThickness="0,0,0,1" 
+                                Margin="0,10,0,0"/>
                     </Grid>
                     
                     <Grid Grid.Row="1">
-                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                        <Grid RowDefinitions="*,*,*,*,*,*,*,*,*,*"
                               ColumnDefinitions="*,*,*,*,*,*"
                               HorizontalAlignment="Stretch"
                               Margin="20">
         
                             <!-- Row 1 -->
                             <TextBlock Text="Date:" Grid.Row="0" Grid.Column="0"/>
-                            <TextBox Text="12-Mar-25" Grid.Row="0" Grid.Column="1"/>
+                            <TextBox Text="{Binding DateText}" Grid.Row="0" Grid.Column="1"/>
                             <TextBlock Text="Shooter:" Grid.Row="0" Grid.Column="2"/>
-                            <TextBox Text="Nicholas" Grid.Row="0" Grid.Column="3"/>
+                            <TextBox Text="" Grid.Row="0" Grid.Column="3"/>
                             <TextBlock Text="Lot No:" Grid.Row="0" Grid.Column="4"/>
                             <TextBox Text="4" Grid.Row="0" Grid.Column="5"/>
                             
                             
                             <!-- Row 2 -->
                             <TextBlock Text="Time:" Grid.Row="1" Grid.Column="0"/>
-                            <TextBox Text="12:24" Grid.Row="1" Grid.Column="1"/>
+                            <TextBox Text="" Grid.Row="1" Grid.Column="1"/>
                             <TextBlock Text="Recorder:" Grid.Row="1" Grid.Column="2"/>
-                            <TextBox Text="Alexandru" Grid.Row="1" Grid.Column="3"/>
+                            <TextBox Text="" Grid.Row="1" Grid.Column="3"/>
                             <TextBlock Text="Client:" Grid.Row="1" Grid.Column="4"/>
-                            <TextBox Text="Galvion ballistic" Grid.Row="1" Grid.Column="5"/>
+                            <TextBox Text="" Grid.Row="1" Grid.Column="5"/>
                             
                             
                             <!-- Row 3 -->
                             <TextBlock Text="Report Number:" Grid.Row="2" Grid.Column="4"/>
-                            <TextBox Text="GLVRDWARE\17grFS" Grid.Row="2" Grid.Column="5"/>
+                            <TextBox Text="" Grid.Row="2" Grid.Column="5"/>
                             
         
                             <!-- Row 4 -->
                             <TextBlock Text="Temperature:" Grid.Row="3" Grid.Column="0"/>
-                            <TextBox Text="20 C" Grid.Row="3" Grid.Column="1"/>
-                            <TextBox Text="68 F" Grid.Row="3" Grid.Column="2"/>
+                            <TextBox Text="" Grid.Row="3" Grid.Column="1"/>
+                            <TextBox Text="" Grid.Row="3" Grid.Column="2"/>
                             
         
                             <!-- Row 5 -->
                             <TextBlock Text="Humidity:" Grid.Row="4" Grid.Column="0"/>
-                            <TextBox Text="29%" Grid.Row="4" Grid.Column="1"/>
+                            <TextBox Text="" Grid.Row="4" Grid.Column="1"/>
         
                             <!-- Final Separator Line -->
-                            <Border Grid.Row="5" Grid.ColumnSpan="6" BorderBrush="White" BorderThickness="0,0,0,1" Margin="0,10,0,0"/>
+                            <Border Grid.Row="5" Grid.ColumnSpan="6" 
+                                    BorderBrush="White" 
+                                    BorderThickness="0,0,0,1" 
+                                    Margin="0,10,0,0"/>
                         </Grid>
                     </Grid>
                     
                     <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Visible">
                         <!-- The options for the form-->
-                        <Grid ColumnDefinitions="*,*,*,*,*" RowDefinitions="10*,90*">
+                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="10*,90*"
+                              VerticalAlignment="Stretch">
                             <TextBlock
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
@@ -110,18 +119,32 @@
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
                                        Text="Load"/>
+                            
                             <TextBlock Grid.Column="2"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
                                        Text="Str.Vel. Ft/s"/>
+                            
                             <TextBlock Grid.Column="3"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
                                        Text="PP/CP"/>
+                            
                             <TextBlock Grid.Column="4"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
                                        Text="Used"/>
+                            
+                            <TextBlock Grid.Column="5"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Text="Position"/>
+                            
+                            <TextBlock Grid.Column="6"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Text="Str.Vel. m/s"/>
+                            
                             <ItemsControl Grid.Row="1" x:Name="NumberControl" 
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
@@ -133,7 +156,7 @@
                                           ItemsSource="{Binding LoadNumTextBoxes}"/>
                                     
                             <ItemsControl Grid.Row="1" Grid.Column="2" 
-                                          x:Name="Control" 
+                                          x:Name="Control"
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
                                           ItemsSource="{Binding  NumVelTextBoxes}">
@@ -148,39 +171,75 @@
                                           x:Name="ComboControl" 
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
-                                          ItemsSource="{Binding ComboBoxes}"/>
+                                          ItemsSource="{Binding PcpComboBoxes}"/>
                             <ItemsControl Grid.Row="1" Grid.Column="4"
                                           x:Name="UsedControl" 
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
-                                          ItemsSource="{Binding UsedBlocks}"></ItemsControl>
+                                          ItemsSource="{Binding UsedBlocks}"/>
+                            <ItemsControl Grid.Row="1" Grid.Column="5"
+                                          x:Name="PositionControl" 
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          ItemsSource="{Binding PosComboBoxes}"/>
+                            <ItemsControl Grid.Row="1" Grid.Column="6"
+                                          x:Name="MsControl" 
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          ItemsSource="{Binding MsTextBoxes}"/>
                         </Grid>
                         </ScrollViewer>
                     
-                        <Grid Grid.Row="3" ColumnDefinitions="70*,15*,15*">
+                        <Grid Grid.Row="3" ColumnDefinitions="85*,15*" RowDefinitions="*">
                         <!--chart-->
-                        <lvc:CartesianChart  
+                        <lvc:CartesianChart   Grid.RowSpan="2"
                                     x:Name="Chart"
                                     Series="{Binding Series}"
                                     YAxes="{Binding AxisList}"
-                                    AnimationsSpeed="00:00:00.100">
+                                    Height="500" 
+                                    AnimationsSpeed="00:00:00.300">
                         </lvc:CartesianChart>
                 
-                        <TextBlock Grid.Column="1"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Center"
-                                   Text="{Binding DebugChartMsg}"/>
-                        <TextBlock Grid.Column="2"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Center"
-                                   Text="{Binding MeanValue}"/>
+                        <Border Grid.Column="1" Classes="TextBlockBorder"
+                                Height="500"
+                                Width="200">
+                            <TextBlock TextWrapping="Wrap"
+                                       Text="{Binding DebugChartMsg}"/>
+                        </Border>
                         <!--
                         <Button Grid.Column="0" Grid.Row="3" 
                                 x:Name="ResetButton"
                                 Command="{Binding ResetButtonCommand}"/>
                         -->
                         </Grid>
-                    </Grid>
+                        <Border Grid.Row="4" Grid.ColumnSpan="2"
+                                BorderBrush="White" 
+                                BorderThickness="0,0,0,1" 
+                                Margin="0,10,0,0"/>
+                        <Grid Grid.Row="5" ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="*,*,*,*,*,*,*"
+                              VerticalAlignment="Stretch">
+                            <Border Grid.Column="1" Classes="TextBlockBorder">
+                                <TextBlock Text="ft./s"/>
+                            </Border>
+                            <Border Grid.Column="2" Classes="TextBlockBorder">
+                                <TextBlock Text="m/s"/>
+                            </Border>
+                            
+                            <Border Grid.Row="1" Grid.Column="0" Classes="TextBlockBorder">
+                                <TextBlock Text="V50:"/>
+                            </Border>
+                            
+                            <Border Grid.Row="1" Grid.Column="1" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding MeanValueFt}"/>
+                            </Border>
+                            
+                            <Border Grid.Row="1" Grid.Column="2" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding MeanValueMs}"/>
+                            </Border>
+                            
+                        </Grid>                    
+                </Grid>
+                </ScrollViewer>
             </SplitView.Content>
         </SplitView>
     </Grid>

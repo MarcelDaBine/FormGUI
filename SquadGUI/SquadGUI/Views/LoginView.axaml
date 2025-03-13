@@ -12,27 +12,20 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:LoginViewModel/>
     </Design.DataContext>
+    <UserControl.Styles>
+        <StyleInclude Source="/Assets/TextBoxDashboardStyle.axaml"></StyleInclude>
+    </UserControl.Styles>
 
     <Grid RowDefinitions="5*, 38*, 6*, 6*, 6*, 6* ,38*" ColumnDefinitions="*,*,*">
         <views:CustomTitleBar Grid.Row="0" Grid.ColumnSpan="3"/>
         <TextBox Grid.Row="2" Grid.Column="1"
                  x:Name="EmailBox"
-                 MaxHeight="6" 
-                 MinWidth="250" MaxWidth="300"
-                 Margin="10"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
                  Watermark="email"
                  KeyDown="EmailBox_OnKeyDown"
                  Text="{Binding Email}"/>
         
         <TextBox Grid.Row="3" Grid.Column="1"
                  x:Name="PassBox"
-                 MaxHeight="6" 
-                 MinWidth="250" MaxWidth="300"
-                 Margin="10"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
                  Watermark="password"
                  PasswordChar="*"
                  KeyDown="PassBox_OnKeyDown"
