@@ -68,7 +68,7 @@
         
                             <!-- Row 1 -->
                             <TextBlock Text="Date:" Grid.Row="0" Grid.Column="0"/>
-                            <TextBox Text="{Binding DateText}" Grid.Row="0" Grid.Column="1"/>
+                            <DatePicker Grid.Column="1" Grid.Row="0" SelectedDate="{Binding FormDate}" />
                             <TextBlock Text="Shooter:" Grid.Row="0" Grid.Column="2"/>
                             <TextBox Text="" Grid.Row="0" Grid.Column="3"/>
                             <TextBlock Text="Lot No:" Grid.Row="0" Grid.Column="4"/>
@@ -216,27 +216,132 @@
                                 BorderBrush="White" 
                                 BorderThickness="0,0,0,1" 
                                 Margin="0,10,0,0"/>
-                        <Grid Grid.Row="5" ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="*,*,*,*,*,*,*"
+                        
+                        <!--V50 Summary-->
+                        <Grid Grid.Row="5" ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="*,*,*,*,*,*,*,*"
                               VerticalAlignment="Stretch">
-                            <Border Grid.Column="1" Classes="TextBlockBorder">
+                            <!-- left side of the V50 Summary-->
+                            <TextBlock Grid.ColumnSpan="9" Text="V50 Summary" 
+                                       FontSize="20" 
+                                       FontWeight="Bold" 
+                                       HorizontalAlignment="Center" 
+                                       Margin="0,10,0,10"/>
+                            <Border Grid.Row="1" Grid.Column="1" Classes="TextBlockBorder">
                                 <TextBlock Text="ft./s"/>
                             </Border>
-                            <Border Grid.Column="2" Classes="TextBlockBorder">
+                            <Border Grid.Row="1" Grid.Column="2" Classes="TextBlockBorder">
                                 <TextBlock Text="m/s"/>
                             </Border>
                             
-                            <Border Grid.Row="1" Grid.Column="0" Classes="TextBlockBorder">
+                            <Border Grid.Row="2" Grid.Column="0" Classes="TextBlockBorder">
                                 <TextBlock Text="V50:"/>
                             </Border>
-                            
-                            <Border Grid.Row="1" Grid.Column="1" Classes="TextBlockBorder">
+                            <Border Grid.Row="2" Grid.Column="1" Classes="TextBlockBorder">
                                 <TextBlock Text="{Binding MeanValueFt}"/>
                             </Border>
-                            
-                            <Border Grid.Row="1" Grid.Column="2" Classes="TextBlockBorder">
+                            <Border Grid.Row="2" Grid.Column="2" Classes="TextBlockBorder">
                                 <TextBlock Text="{Binding MeanValueMs}"/>
                             </Border>
                             
+                            <Border Grid.Row="3" Grid.Column="0" Classes="TextBlockBorder">
+                                <TextBlock Text="High Partial"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="1" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding HighPartialFt}"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="2" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding HighPartialMs}"/>
+                            </Border>
+                            
+                            <Border Grid.Row="4" Grid.Column="0" Classes="TextBlockBorder">
+                                <TextBlock Text="Low Complete"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="1" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding LowCompleteFt}"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="2" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding LowCompleteMs}"/>
+                            </Border>
+                            
+                            <Border Grid.Row="5" Grid.Column="0" Classes="TextBlockBorder">
+                                <TextBlock Text="Zone of Mixed Results"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="1" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding MixedResultsFt}"/>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="2" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding MixedResultsMs}"/>
+                            </Border>
+                            
+                            <Border Grid.Row="6" Grid.Column="0" Classes="TextBlockBorder">
+                                <TextBlock Text="Gap"/>
+                            </Border>
+                            <Border Grid.Row="6" Grid.Column="1" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding GapFt}"/>
+                            </Border>
+                            <Border Grid.Row="6" Grid.Column="2" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding GapMs}"/>
+                            </Border>
+                            
+                            <Border Grid.Row="7" Grid.Column="0" Classes="TextBlockBorder">
+                                <TextBlock Text="Range of Results"/>
+                            </Border>
+                            <Border Grid.Row="7" Grid.Column="1" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding GapFt}"/>
+                            </Border>
+                            <Border Grid.Row="7" Grid.Column="2" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding GapMs}"/>
+                            </Border>
+                            
+                            <!-- right side of the V50 Summary-->
+                            <Border Grid.Row="1" Grid.Column="4" Classes="TextBlockBorder">
+                                <TextBlock Text="ft./s"/>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="5" Classes="TextBlockBorder">
+                                <TextBlock Text="m/s"/>
+                            </Border>
+                            
+                            <Border Grid.Row="2" Grid.Column="3" Classes="TextBlockBorder">
+                                <TextBlock Text="V50 min:"/>
+                            </Border>
+                                
+                            <control:FloatNumTextBox Grid.Row="2" Grid.Column="4" 
+                                                     Text="{Binding V50MinFt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            
+                            <control:FloatNumTextBox Grid.Row="2" Grid.Column="5" 
+                                                     Text="{Binding V50MinMs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            
+                            <Border Grid.Row="3" Grid.Column="3" Classes="TextBlockBorder">
+                                <TextBlock Text="ΔV"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="4" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding DeltaVMs}"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="5" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding DeltaVFt}"/>
+                            </Border>
+                            
+                            <Border Grid.Row="4" Grid.Column="3" Classes="TextBlockBorder">
+                                <TextBlock Text="Percentage Difference"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="4" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding PercentageFt}"/>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="5" Classes="TextBlockBorder">
+                                <TextBlock Text="{Binding PercentageMs}"/>
+                            </Border>
+                            
+                            <Border Grid.Row="5" Grid.Column="3" Classes="TextBlockBorder">
+                                <TextBlock Text="Measurement of  Expanded Uncertainty"/>
+                            </Border>
+                            
+                            <control:FloatNumTextBox Grid.Row="5" Grid.Column="4"
+                                                     Text="{Binding ExpandedUncertainty}"/>
+                            
+                            <Border Grid.Row="5" Grid.Column="5" Classes="TextBlockBorder">
+                                <TextBlock Text="m/s"
+                                           HorizontalAlignment="Left"/>
+                            </Border>
                         </Grid>                    
                 </Grid>
                 </ScrollViewer>

@@ -53,7 +53,33 @@ public class DashboardViewModel : ViewModelBase
     private string _meanValueFt;
     private string _debugChartMsg;
     private string _dateText;
-    
+    private string _highPartialMs;
+    private string _highPartialFt;
+    private string _lowCompleteMs;
+    private string _lowCompleteFt;
+    private string _mixedResultsFt;
+    private string _mixedResultsMs;
+    private string _gapMs;
+    private string _gapFt;
+    private string _rangeResultsFt;
+    private string _rangeResultsMs;
+    private string _v50MinFt;
+    private string _v50MinMs;
+    private string _deltaVMs;
+    private string _deltaVFt;
+    private string _percentageFt;
+    private string _percentageMs;
+    private string _expandedUncertainty;
+    private string _decisionRule;
+
+    private DateTimeOffset? _formDate = DateTimeOffset.Now;
+
+    public DateTimeOffset? FormDate
+    {
+        get => _formDate;
+        set => this.RaiseAndSetIfChanged(ref _formDate, value);
+    }
+
     //Button Commands
     public ReactiveCommand<Unit, Unit> ResetButtonCommand { get; }
     public ReactiveCommand<Unit, Unit> TogglePaneCommand { get; }
@@ -72,7 +98,7 @@ public class DashboardViewModel : ViewModelBase
         {
             this.RaiseAndSetIfChanged(ref _meanValueMs, value);
             Console.WriteLine(value);
-            MeanValueFt = double.TryParse(_meanValueMs, out var mean) ? ConvertMetersToFeet(mean).ToString("F3") : "aaaaaa";
+            MeanValueFt = ConvertMetersToFeetString(value);
         }
     }
 
@@ -128,12 +154,6 @@ public class DashboardViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _usedBlocks, value);
     }
 
-    public ObservableCollection<TextBox> MsTextBoxes
-    {
-        get => _msTextBoxes;
-        set => this.RaiseAndSetIfChanged(ref _msTextBoxes, value);
-    }
-    
     public ISeries[] Series
     {
         get => _series;
@@ -144,6 +164,130 @@ public class DashboardViewModel : ViewModelBase
     {
         get => _axisList;
     }
+    
+    //V50 Summary accesors and setters
+    public ObservableCollection<TextBox> MsTextBoxes
+    {
+        get => _msTextBoxes;
+        set => this.RaiseAndSetIfChanged(ref _msTextBoxes, value);
+    }
+    public string HighPartialMs
+    {
+        get => _highPartialMs;
+        set => this.RaiseAndSetIfChanged(ref _highPartialMs, value);
+    }
+
+    public string HighPartialFt
+    {
+        get => _highPartialFt;
+        set => this.RaiseAndSetIfChanged(ref _highPartialFt, value);
+    }
+
+    public string LowCompleteMs
+    {
+        get => _lowCompleteMs;
+        set => this.RaiseAndSetIfChanged(ref _lowCompleteMs, value);
+    }
+
+    public string LowCompleteFt
+    {
+        get => _lowCompleteFt;
+        set => this.RaiseAndSetIfChanged(ref _lowCompleteFt, value);
+    }
+
+    public string MixedResultsFt
+    {
+        get => _mixedResultsFt;
+        set => this.RaiseAndSetIfChanged(ref _mixedResultsFt, value);
+    }
+
+    public string MixedResultsMs
+    {
+        get => _mixedResultsMs;
+        set => this.RaiseAndSetIfChanged(ref _mixedResultsMs, value);
+    }
+
+    public string GapMs
+    {
+        get => _gapMs;
+        set => this.RaiseAndSetIfChanged(ref _gapMs, value);
+    }
+
+    public string GapFt
+    {
+        get => _gapFt;
+        set => this.RaiseAndSetIfChanged(ref _gapFt, value);
+    }
+
+    public string RangeResultsFt
+    {
+        get => _rangeResultsFt;
+        set => this.RaiseAndSetIfChanged(ref _rangeResultsFt, value);
+    }
+
+    public string RangeResultsMs
+    {
+        get => _rangeResultsMs;
+        set => this.RaiseAndSetIfChanged(ref _rangeResultsMs, value);
+    }
+    public string V50MinFt
+    {
+        get => _v50MinFt;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _v50MinFt, value);
+            this.RaiseAndSetIfChanged(ref _v50MinMs, ConvertFeetToMetersString(value));
+            this.RaisePropertyChanged(nameof(V50MinMs));
+        }
+    }
+
+    public string V50MinMs
+    {
+        get => _v50MinMs;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _v50MinMs, value);
+            this.RaiseAndSetIfChanged(ref _v50MinFt, ConvertMetersToFeetString(value));
+            this.RaisePropertyChanged(nameof(V50MinFt));
+        }
+    }
+
+    public string DeltaVMs
+    {
+        get => _deltaVMs;
+        set => this.RaiseAndSetIfChanged(ref _deltaVMs, value);
+    }
+
+    public string DeltaVFt
+    {
+        get => _deltaVFt;
+        set => this.RaiseAndSetIfChanged(ref _deltaVFt, value);
+    }
+
+    public string PercentageFt
+    {
+        get => _percentageFt;
+        set => this.RaiseAndSetIfChanged(ref _percentageFt, value);
+    }
+
+    public string PercentageMs
+    {
+        get => _percentageMs;
+        set => this.RaiseAndSetIfChanged(ref _percentageMs, value);
+    }
+
+    public string ExpandedUncertainty
+    {
+        get => _expandedUncertainty;
+        set => this.RaiseAndSetIfChanged(ref _expandedUncertainty, value);
+    }
+
+    public string DecisionRule
+    {
+        get => _decisionRule;
+        set => this.RaiseAndSetIfChanged(ref _decisionRule, value);
+    }
+
 
     //constructor
     public DashboardViewModel()
@@ -535,8 +679,44 @@ public class DashboardViewModel : ViewModelBase
             sum += cp[i].Value;
             sum += pp[i].Value;
         }
+        
         UpdateUsedBlock(cp, pp);
-        return ConvertFeetToMeters(sum) / (pp.Count + cp.Count);
+        HighPartialMs = ConvertFeetToMeters(pp.First().Value).ToString("F3");
+        HighPartialFt = pp.First().Value.ToString("F3");
+        LowCompleteMs = ConvertFeetToMeters(cp.First().Value).ToString("F3");
+        LowCompleteFt = cp.First().Value.ToString("F3");
+        
+        if (pp[0].Value - cp[0].Value >= 0)
+        {
+            MixedResultsFt = (pp[0].Value - cp[0].Value).ToString("f3");
+            MixedResultsMs = ConvertFeetToMeters(pp[0].Value - cp[0].Value).ToString("f3");
+            GapMs = "";
+            GapFt = "";
+        }
+        else
+        {
+            MixedResultsFt = "";
+            MixedResultsMs = "";
+            GapMs = (cp[0].Value - pp[0].Value).ToString("f3");
+            GapFt = ConvertFeetToMeters(cp[0].Value - pp[0].Value).ToString("f3");
+        }
+
+        var V50Ft = sum / (pp.Count + cp.Count);
+        var V50Ms = ConvertFeetToMeters(V50Ft);
+
+        if (!double.TryParse(V50MinMs, out double V50MinMsValue))
+        {
+            return V50Ms;
+        }
+
+        var deltaMs = V50Ms - V50MinMsValue;
+        DeltaVMs = (V50Ms - double.Parse(V50MinMs)).ToString("F3");
+        DeltaVFt = (V50Ft - double.Parse(V50MinFt)).ToString("F3");
+
+        var percentageMs = deltaMs / V50MinMsValue;
+        PercentageMs = percentageMs.ToString("F2") + "%";
+        PercentageFt = PercentageMs;
+        return V50Ms;
     }
 
     private static double DifferenceBetweenLists(List<KeyValuePair<FloatNumTextBox, double>> cp, List<KeyValuePair<FloatNumTextBox, double>> pp)
@@ -555,9 +735,26 @@ public class DashboardViewModel : ViewModelBase
     {
         return feet * 0.3048;
     }
+    private static string ConvertFeetToMetersString(string feet)
+    {
+        if (double.TryParse(feet, out double feetValue))
+        {
+            return (feetValue * 0.3048).ToString("F3");
+        }
+        return feet;
+    }
     private static double ConvertMetersToFeet(double meters)
     {
         return meters / 0.3048;
+    }
+    
+    private static string ConvertMetersToFeetString(string feet)
+    {
+        if (double.TryParse(feet, out double feetValue))
+        {
+            return (feetValue / 0.3048).ToString("F3");
+        }
+        return feet;
     }
 
     private string DateFormater(string input)
