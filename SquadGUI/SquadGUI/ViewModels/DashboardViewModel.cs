@@ -238,6 +238,7 @@ public class DashboardViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _v50MinFt, value);
             this.RaiseAndSetIfChanged(ref _v50MinMs, ConvertFeetToMetersString(value));
             this.RaisePropertyChanged(nameof(V50MinMs));
+            UpdateChart();
         }
     }
 
@@ -249,6 +250,7 @@ public class DashboardViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _v50MinMs, value);
             this.RaiseAndSetIfChanged(ref _v50MinFt, ConvertMetersToFeetString(value));
             this.RaisePropertyChanged(nameof(V50MinFt));
+            UpdateChart();
         }
     }
 
