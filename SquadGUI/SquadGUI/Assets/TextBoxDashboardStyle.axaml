@@ -11,7 +11,7 @@
             <Setter Property="Watermark" Value="Input..."/>
             <Setter Property="MaxHeight" Value="5"/>
             <Setter Property="MinWidth" Value="150"/>
-            <Setter Property="MaxWidth" Value="200"/>
+            <Setter Property="MaxWidth" Value="500"/>
             <Setter Property="Margin" Value="10"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
