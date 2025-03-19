@@ -62,7 +62,7 @@
                     
                     <Grid Grid.Row="1">
                         <Grid RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*"
-                              ColumnDefinitions="150,200,150,200,200,150,200,*,*,*" 
+                              ColumnDefinitions="1.5*,2*,1.5*,2*,2*,1.5*,2*,*,*"  
                               HorizontalAlignment="Stretch"
                               Margin="20"><!-- 150,200,150,200,150,200,*,*-->
                             <Border  Grid.RowSpan="15" Grid.Column="5"
@@ -78,7 +78,7 @@
                             <TextBlock Text="Shooter:" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="140,0,0,0"/>
                             <TextBox Text="" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Margin="15,0,0,0"/>
                             <TextBlock Text="Lot No:" Grid.Row="0" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Text="4" Grid.Row="0" Grid.Column="6" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Text="" Grid.Row="0" Grid.Column="6" HorizontalAlignment="Left" Margin="8"/>
                             
                             <TextBlock Text="Time:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <TextBox Text="" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
@@ -91,10 +91,20 @@
                             <TextBox Text="" Grid.Row="2" Grid.Column="6" HorizontalAlignment="Left" Margin="8"/>
                             
                             <TextBlock Text="Temperature:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Text="" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBlock Text="C`" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="-35,0,0,0"/>
-                            <TextBox Text="" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBlock Text="F" Grid.Row="3" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="-30,0,0,0"/>
+                            
+                            <!-- Celsius -->
+                            <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8">
+                                <TextBox Margin="0,0,20,0"/>
+                                <TextBlock Text="C'" VerticalAlignment="Center"
+                                           Margin="0,0,0,0"/>
+                            </StackPanel>
+
+                            <!-- Fahrenheit -->
+                            <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="8">
+                                <TextBox Margin="30,0,20,0"/>
+                                <TextBlock Text="F" VerticalAlignment="Center"
+                                           Margin="0,0,0,0"/>
+                            </StackPanel>
                             
                             <TextBlock Text="Humidity:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <TextBox Text="" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
@@ -124,10 +134,19 @@
                             
                             <TextBlock Text="Mass:" Grid.Row="12" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <TextBox Grid.Row="12" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBox Grid.Row="12" Grid.Column="2" HorizontalAlignment="Center" Margin="8"/>
-                            <TextBlock Text="g" Grid.Row="12" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="-15,0,0,0"/>
-                            <TextBox Grid.Row="12" Grid.Column="4" HorizontalAlignment="Center" Margin="8"/>
-                            <TextBlock Text="lb" Grid.Row="12" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="-15,0,0,0"/>
+                            <!-- g -->
+                            <StackPanel Grid.Row="12" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="8">
+                                <TextBox Margin="0,0,20,0"/>
+                                <TextBlock Text="g" VerticalAlignment="Center"
+                                           Margin="0,0,0,0"/>
+                            </StackPanel>
+
+                            <!-- lb -->
+                            <StackPanel Grid.Row="12" Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center" Margin="8">
+                                <TextBox Margin="0,0,20,0"/>
+                                <TextBlock Text="lb" VerticalAlignment="Center"
+                                           Margin="0,0,0,0"/>
+                            </StackPanel>
                             
                             <!-- Vertical line-->
                             <Border Grid.Row="8" Grid.Column="6" Grid.RowSpan="5"
@@ -138,7 +157,7 @@
                             
                             <!-- Additional TextBox after vertical line  -->
                             <TextBlock Text="Sample Notes:" Grid.Row="8" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBox Grid.Row="9" Grid.Column="6" Width="500" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Grid.Row="9" Grid.Column="6" Width="250" HorizontalAlignment="Left" Margin="8"/>
                             
                             
                             <TextBlock Text="Condition:" Grid.Row="13" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
