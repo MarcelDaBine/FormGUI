@@ -70,7 +70,7 @@
                                      BorderThickness="2,0,0,0" 
                                      Height="310"
                                      VerticalAlignment="Top"
-                                     Margin="20,-22,-55,-20"/>
+                                     Margin="20,-22,15,-20"/>
                             
                             <!-- Row 1 -->
                             <TextBlock Text="Date:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
@@ -82,12 +82,12 @@
                             
                             <TextBlock Text="Time:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <TextBox Text="" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBlock Text="Recorder:" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="50,0,20,0"/>
+                            <TextBlock Text="Recorder:" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="50,8,20,0"/>
                             <TextBox Text="" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Left" Margin="-5,0,0,0"/>
                             <TextBlock Text="Client:" Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <TextBox Text="" Grid.Row="1" Grid.Column="6" HorizontalAlignment="Left" Margin="8"/>
                             
-                            <TextBlock Text="Report No:" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
+                            <TextBlock Text="Report No:" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="20,8,8,0"/>
                             <TextBox Text="" Grid.Row="2" Grid.Column="6" HorizontalAlignment="Left" Margin="8"/>
                             
                             <TextBlock Text="Temperature:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
@@ -120,7 +120,7 @@
                             <Border Grid.Row="7" Grid.ColumnSpan="15" BorderBrush="White" BorderThickness="0,0,0,3" Margin="-20,10,-20,0"/>
                             
                             <!-- Sample Fields -->
-                            <TextBlock Text="Sample Number:" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
+                            <TextBlock Text="Sample No:" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <TextBox Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
                             
                             <TextBlock Text="Description:" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
@@ -133,9 +133,9 @@
                             <TextBox Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
                             
                             <TextBlock Text="Mass:" Grid.Row="12" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="12" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Grid.Row="12" Grid.Column="1" HorizontalAlignment="Left" Margin="8,0,20,0"/>
                             <!-- g -->
-                            <StackPanel Grid.Row="12" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="8">
+                            <StackPanel Grid.Row="12" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
                                 <TextBox Margin="0,0,20,0"/>
                                 <TextBlock Text="g" VerticalAlignment="Center"
                                            Margin="0,0,0,0"/>
@@ -321,7 +321,7 @@
                                 Margin="0,10,0,0"/>
                         
                         <!--V50 Summary-->
-                        <Grid Grid.Row="5" ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,*"
+                        <Grid Grid.Row="5" ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*"
                               VerticalAlignment="Stretch">
                             <!-- left side of the V50 Summary-->
                             <TextBlock Classes="SectionText" Text="V50 Summary"  Grid.ColumnSpan="9"/>
@@ -441,11 +441,13 @@
                                 <TextBlock Text="m/s"
                                            HorizontalAlignment="Left"/>
                             </Border>
-                            <Border Grid.Row="12" Grid.ColumnSpan="9" BorderBrush="White" BorderThickness="0,0,0,3" Margin="0,10,0,0"/>
+                            <Border Grid.Row="9" Grid.ColumnSpan="9" BorderBrush="White" BorderThickness="0,0,0,3" Margin="0,30,0,0"/>
                             
-                            <!-- Results Note Section -->
-                            <TextBlock Classes="SectionText" Text="The results shown in this report apply only to the product Lot number cited in Lot No field of this form" Grid.Row="13" Grid.ColumnSpan="9"/>
-                            <Border Grid.Row="14" Grid.ColumnSpan="9" BorderBrush="White" BorderThickness="0,0,0,3" Margin="0,10,0,0"/>
+                            <!-- After Form -->
+                            <TextBlock Text="" Grid.Row="10" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,0"/>
+                            <TextBlock Classes="SectionText" Text="The results shown in this report apply only to the product Lot number cited in Lot No field of this form" Grid.Row="11" Grid.ColumnSpan="9"/>
+                            <TextBlock Text="" Grid.Row="12" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
+                            <Border Grid.Row="13" Grid.ColumnSpan="9" BorderBrush="White" BorderThickness="0,0,0,3" Margin="0,10,0,0"/>
                         </Grid>                    
                 </Grid>
                 </ScrollViewer>
