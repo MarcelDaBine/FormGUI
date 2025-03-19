@@ -30,7 +30,7 @@
         <Setter Property="Margin" Value="10,20,10,10"/>
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="FontFamily" Value="Georgia"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
     </Style>
     
     <!-- mid-section Titles style -->
@@ -41,6 +41,6 @@
         <Setter Property="Margin" Value="10,20,10,10"/>
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="FontFamily" Value="Georgia"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
     </Style>
 </Styles>
