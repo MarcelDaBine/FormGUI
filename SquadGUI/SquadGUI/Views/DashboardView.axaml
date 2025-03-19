@@ -70,24 +70,24 @@
                                      BorderThickness="2,0,0,0" 
                                      Height="310"
                                      VerticalAlignment="Top"
-                                     Margin="0,-22,-60,-20"/>
+                                     Margin="20,-22,-55,-20"/>
                             
                             <!-- Row 1 -->
                             <TextBlock Text="Date:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <DatePicker Grid.Column="1" Grid.Row="0" SelectedDate="{Binding FormDate}" Width="300" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBlock Text="Shooter:" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="140,0,0,0"/>
-                            <TextBox Text="" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Margin="15,0,0,0"/>
+                            <TextBlock Text="Shooter:" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="50,0,20,0"/>
+                            <TextBox Text="" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Left" Margin="-5,0,0,0"/>
                             <TextBlock Text="Lot No:" Grid.Row="0" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <TextBox Text="" Grid.Row="0" Grid.Column="6" HorizontalAlignment="Left" Margin="8"/>
                             
                             <TextBlock Text="Time:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <TextBox Text="" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBlock Text="Recorder:" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="140,0,0,0"/>
-                            <TextBox Text="" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Left" Margin="15,0,0,0"/>
+                            <TextBlock Text="Recorder:" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="50,0,20,0"/>
+                            <TextBox Text="" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Left" Margin="-5,0,0,0"/>
                             <TextBlock Text="Client:" Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <TextBox Text="" Grid.Row="1" Grid.Column="6" HorizontalAlignment="Left" Margin="8"/>
                             
-                            <TextBlock Text="Report Number:" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
+                            <TextBlock Text="Report No:" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <TextBox Text="" Grid.Row="2" Grid.Column="6" HorizontalAlignment="Left" Margin="8"/>
                             
                             <TextBlock Text="Temperature:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
@@ -100,8 +100,8 @@
                             </StackPanel>
 
                             <!-- Fahrenheit -->
-                            <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="8">
-                                <TextBox Margin="30,0,20,0"/>
+                            <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="40,0,0,0">
+                                <TextBox Margin="40,0,20,0"/>
                                 <TextBlock Text="F" VerticalAlignment="Center"
                                            Margin="0,0,0,0"/>
                             </StackPanel>
