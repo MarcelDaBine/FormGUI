@@ -14,5 +14,7 @@
             <Setter Property="MaxWidth" Value="500"/>
             <Setter Property="Margin" Value="10"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
         </Style>
 </Styles>
