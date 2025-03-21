@@ -14,4 +14,11 @@
         <FluentTheme />
         <StyleInclude Source="/Assets/MenuIcon.axaml"/>
     </Application.Styles>
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <MergeResourceInclude Source="/Assets/ComboBoxStyle.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

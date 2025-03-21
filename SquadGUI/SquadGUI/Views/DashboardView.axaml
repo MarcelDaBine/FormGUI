@@ -8,6 +8,8 @@
              x:Class="SquadGUI.Views.DashboardView"
              x:DataType="vm:DashboardViewModel"
              xmlns:control="clr-namespace:SquadGUI.Assets"
+             xmlns:behaviors="clr-namespace:SquadGUI.Behaviors"
+             xmlns:interactivity="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:views="clr-namespace:SquadGUI.Views">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -20,6 +22,7 @@
         <StyleInclude Source="/Assets/TextBoxDashboardStyle.axaml"/>
         <StyleInclude Source="/Assets/ButtonDashboardStyle.axaml"/>
         <StyleInclude Source="/Assets/TextBlockStyle.axaml"/>
+        <StyleInclude Source="/Assets/flyOut.axaml"/>
     </UserControl.Styles>
     
     <Grid RowDefinitions="5*,95*">
@@ -33,19 +36,29 @@
                    DisplayMode="CompactOverlay">
             <!--Side menu implementation-->
             <SplitView.Pane>
-                <Button
-                        Name="MenuPaneButton"
-                        Height="35"
-                        Width="35"
-                        Command="{Binding TogglePaneCommand}"
-                        HorizontalAlignment="Left">
-                    <PathIcon Data="{DynamicResource LineHorizontal3Regular}"/>
-                </Button>
+                <Grid RowDefinitions="*,*">
+                    <Button 
+                            Name="MenuPaneButton"
+                            Height="35"
+                            Width="35"
+                            Command="{Binding TogglePaneCommand}"
+                            HorizontalAlignment="Left">
+                        <PathIcon Data="{DynamicResource LineHorizontal3Regular}"/>
+                    </Button>
+                    <TextBox Grid.Row="1">
+                        <FlyoutBase.AttachedFlyout>
+                            <Flyout>
+                                <TextBlock Text="Red Rectangle Flyout." />
+                            </Flyout>
+                        </FlyoutBase.AttachedFlyout>
+                    </TextBox>
+                </Grid>
             </SplitView.Pane>
             
             <SplitView.Content>
                 <ScrollViewer>
-                    <Grid RowDefinitions="Auto,Auto,*,*,*,*"><!--5*,45*,45*,5*-->
+                    <Grid RowDefinitions="Auto,Auto,*,*,*,*"
+                          x:Name="MainGrid"><!--5*,45*,45*,5*-->
                     
                     <Grid>
                         <Border Background="#1E1E1E" Padding="10" CornerRadius="5">
@@ -63,9 +76,9 @@
                     
                     <!-- Upper report implementation-->
                     
-                    <Grid Grid.Row="1">
+                    <Grid Grid.Row="1" x:Name="MainGridContent">
                         <Grid RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*"
-                              ColumnDefinitions="150,200,150,200,200,150,200,*,*,*" 
+                              ColumnDefinitions="150,200,150,200,200,150,250,*,*,*" 
                               HorizontalAlignment="Stretch"
                               Margin="20"><!-- 150,200,150,200,150,200,*,*-->
                             <Border  Grid.RowSpan="15" Grid.Column="5"
@@ -79,30 +92,38 @@
                             <TextBlock Text="Date:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <DatePicker Grid.Column="1" Grid.Row="0" SelectedDate="{Binding FormDate}" Width="300" HorizontalAlignment="Left" Margin="8"/>
                             <TextBlock Text="Shooter:" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="140,0,0,0"/>
-                            <TextBox Text="" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Margin="15,0,0,0"/>
+                            <TextBox Text="" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Margin="15,0,0,0"
+                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             <TextBlock Text="Lot No:" Grid.Row="0" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Text="4" Grid.Row="0" Grid.Column="6" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Text="" Grid.Row="0" Grid.Column="6" HorizontalAlignment="Left" Margin="8"
+                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             
                             <!-- Row 2 -->
                             <TextBlock Text="Time:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Text="" Grid.Row="1" Grid.Column="1" Width="100" HorizontalAlignment="Left" Margin="8"/>
+                            <TimePicker SelectedTime="{Binding FormTime}" Grid.Row="1" Grid.Column="1" Width="300" HorizontalAlignment="Left" Margin="8"
+                                        behaviors:ValidationBehavior.EnableValidation="True"/>
                             <TextBlock Text="Recorder:" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Text="" Grid.Row="1" Grid.Column="3" Width="100" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Text="" Grid.Row="1" Grid.Column="3" Width="100" HorizontalAlignment="Left" Margin="8"
+                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             <TextBlock Text="Client:" Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Text="" Grid.Row="1" Grid.Column="6" Width="100" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Text="" Grid.Row="1" Grid.Column="6" Width="100" HorizontalAlignment="Left" Margin="8"
+                                     behaviors:ValidationBehavior.EnableValidation="True"/>
 
                             <!-- Row 3 -->
                             <TextBlock Text="Report Number:" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Text="" Grid.Row="2" Grid.Column="6" Width="100" HorizontalAlignment="Left" Margin="8"/>
+                            <views:SampleNumberInput Grid.Row="2" Grid.Column="6" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="8"/>
 
                             <!-- Row 4 -->
                             <TextBlock Text="Temperature:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <control:PostTextBox Text="{Binding CelsiusText}" Unit="Celsius" Grid.Row="3" Grid.Column="1"  HorizontalAlignment="Left" Margin="8"/>
-                            <control:PostTextBox Text="{Binding FahrenheitText}" Unit="Fahrenheit" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Left" Margin="8"/>
+                            <control:PostTextBox Text="{Binding CelsiusText}" Unit="Celsius" Grid.Row="3" Grid.Column="1"  HorizontalAlignment="Left" Margin="8"
+                                                 behaviors:ValidationBehavior.EnableValidation="True"/>
+                            <control:PostTextBox Text="{Binding FahrenheitText}" Unit="Fahrenheit" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Left" Margin="8"
+                                                 behaviors:ValidationBehavior.EnableValidation="True"/>
 
                             <!-- Row 5 -->
                             <TextBlock Text="Humidity:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <control:PostTextBox Unit="Percent" Text="{Binding HumidityText}" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
+                            <control:PostTextBox Unit="Percent" Text="{Binding HumidityText}" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="8"
+                                                 behaviors:ValidationBehavior.EnableValidation="True"/>
         
                             <!--Separator Line -->
                             <Border Grid.Row="5" Grid.ColumnSpan="15" 
@@ -116,19 +137,42 @@
                             
                             <!-- Sample Fields -->
                             <TextBlock Text="Sample Number:" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Text = "{Binding SampleNumberText}" Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" Margin="8"
+                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             <TextBlock Text="Description:" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" Margin="8"
+                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             <TextBlock Text="Model:" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="10" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
+                            <ComboBox Grid.Row="10" Grid.Column="1" HorizontalAlignment="Left" Margin="8"
+                                      ItemsSource="{Binding HelmetTypes}"
+                                      SelectedValue="{Binding SelectedModel}"
+                                      behaviors:ValidationBehavior.EnableValidation="True">
+                                <Interaction.Behaviors>
+                                    <behaviors:OpenComboBoxBehavior/>
+                                </Interaction.Behaviors>
+                            </ComboBox>
                             <TextBlock Text="Size:" Grid.Row="11" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
+                            <ComboBox Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" Margin="8"
+                                      ItemsSource="{Binding HelmetSize}"
+                                      SelectedValue="{Binding SelectedSize}"
+                                      behaviors:ValidationBehavior.EnableValidation="True">
+                                <Interaction.Behaviors>
+                                    <behaviors:OpenComboBoxBehavior/>
+                                </Interaction.Behaviors>
+                            </ComboBox>
                             <TextBlock Text="Mass:" Grid.Row="12" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="12" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBox Grid.Row="12" Grid.Column="2" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBlock Text="g" Grid.Row="12" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8"/>
-                            <TextBox Grid.Row="12" Grid.Column="4" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBlock Text="lb" Grid.Row="12" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8"/>
+                            <ComboBox Grid.Row="12" Grid.Column="1" HorizontalAlignment="Left" Margin="8"
+                                      ItemsSource="{Binding ShellDescriptions}"
+                                      SelectedValue="{Binding SelectedMass}"
+                                      behaviors:ValidationBehavior.EnableValidation="True">
+                                <Interaction.Behaviors>
+                                    <behaviors:OpenComboBoxBehavior/>
+                                </Interaction.Behaviors>
+                            </ComboBox>
+                            <control:DoublePostTextBox Unit="Grams" Text="{Binding MassGrams}" Grid.Row="12" Grid.Column="2" HorizontalAlignment="Left" Margin="8"
+                                                       behaviors:ValidationBehavior.EnableValidation="True"/>
+                            <control:DoublePostTextBox Unit="Pounds" Text="{Binding MassPounds}" Grid.Row="12" Grid.Column="4" HorizontalAlignment="Left" Margin="8"
+                                                       behaviors:ValidationBehavior.EnableValidation="True"/>
                             
                             <Border Grid.Row="8" Grid.Column="6" Grid.RowSpan="5"
                                     BorderBrush="White" 
@@ -139,11 +183,23 @@
                             <!-- Additional Fields After Vertical Line -->
                             <TextBox Grid.Row="8" Grid.Column="6" Width="150" HorizontalAlignment="Left" Margin="8"/>
                             <TextBlock Text="Tested shells were used" Grid.Row="8" Grid.Column="8" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBlock Text="1." Grid.Row="9" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="8"/>
-                            <TextBox Grid.Row="9" Grid.Column="7" Width="150" HorizontalAlignment="Left" Margin="8"/>
+                            <ItemsControl ItemsSource="{Binding SampleInfoBoxesIndexes}" Grid.RowSpan="5" Grid.Row="9" Grid.Column="6"  HorizontalAlignment="Left" Margin="8"/>
+                            <ItemsControl ItemsSource="{Binding SampleInfoBoxes}" Grid.RowSpan="5" Grid.Row="9" Grid.Column="7" HorizontalAlignment="Left" Margin="8"/>
+                            <ItemsControl Grid.Row="9" Grid.Column="8" Grid.RowSpan="5"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Top"
+                                          ItemsSource="{Binding SampleDeleteButtons}"
+                                          Margin="8"/>
                             
                             <TextBlock Text="Condition:" Grid.Row="13" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="13" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
+                            <ComboBox Grid.Row="13" Grid.Column="1" HorizontalAlignment="Left" Margin="8"
+                                      ItemsSource="{Binding Conditions}"
+                                      SelectedItem="{Binding SelectedCondition}"
+                                      behaviors:ValidationBehavior.EnableValidation="True">
+                                <Interaction.Behaviors>
+                                    <behaviors:OpenComboBoxBehavior/>
+                                </Interaction.Behaviors>
+                            </ComboBox>
                             
                             <Border Grid.Row="14" Grid.ColumnSpan="15" BorderBrush="White" BorderThickness="0,0,0,1" Margin="-20,10,-20,0"/>
                             
@@ -152,11 +208,32 @@
                             
                             <!-- Ammunition Fields -->
                             <TextBlock Text="Projectile:" Grid.Row="17" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="17" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
+                            <ComboBox Grid.Row="17" Grid.Column="1" HorizontalAlignment="Left" Margin="8"
+                                      ItemsSource="{Binding Projectiles}"
+                                      SelectedValue="{Binding  SelectedProjectile}"
+                                      behaviors:ValidationBehavior.EnableValidation="True">
+                                <Interaction.Behaviors>
+                                    <behaviors:OpenComboBoxBehavior/>
+                                </Interaction.Behaviors>
+                            </ComboBox>
                             <TextBlock Text="Powder:" Grid.Row="17" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="17" Grid.Column="3" HorizontalAlignment="Left" Margin="8"/>
+                            <ComboBox Grid.Row="17" Grid.Column="3" HorizontalAlignment="Left" Margin="8"
+                                      ItemsSource="{Binding PowderTypes}"
+                                      SelectedValue="{Binding SelectedPowder}"
+                                      behaviors:ValidationBehavior.EnableValidation="True">
+                                <Interaction.Behaviors>
+                                    <behaviors:OpenComboBoxBehavior/>
+                                </Interaction.Behaviors>
+                            </ComboBox>
                             <TextBlock Text="Barrel:" Grid.Row="17" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="17" Grid.Column="5" HorizontalAlignment="Left" Margin="8"/>
+                            <ComboBox Grid.Row="17" Grid.Column="5" HorizontalAlignment="Left" Margin="8"
+                                      SelectedValue="{Binding SelectedBarrel}"
+                                      ItemsSource="{Binding BarrelType}"
+                                      behaviors:ValidationBehavior.EnableValidation="True">
+                                <Interaction.Behaviors>
+                                    <behaviors:OpenComboBoxBehavior/>
+                                </Interaction.Behaviors>
+                            </ComboBox>
                             
                             <Border Grid.Row="18" Grid.ColumnSpan="15" BorderBrush="White" BorderThickness="0,0,0,1" Margin="-20,10,-20,0"/>
                             
@@ -165,17 +242,27 @@
                             <Border Grid.Row="21" Grid.ColumnSpan="15" BorderBrush="White" BorderThickness="0,0,0,1" Margin="-20,10,-20,0"/>
                             
                             <!-- Range Configuration Fields -->
-                            <TextBlock Text="Doppler Radar:" Grid.Row="22" Grid.Column="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="24" Grid.Column="0" HorizontalAlignment="Left" Margin="8"/>
+                            <ComboBox Grid.Row="22" Grid.Column="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"
+                                      ItemsSource="{Binding RangeTypes}"
+                                      SelectedValue="{Binding SelectedRangeConfig}">
+                                <Interaction.Behaviors>
+                                    <behaviors:OpenComboBoxBehavior/>
+                                </Interaction.Behaviors>
+                            </ComboBox>
+                            <TextBlock Text="{Binding RangeConfigText}" Grid.Row="24" Grid.Column="0" HorizontalAlignment="Left" Margin="8" Height="200" Width="150" TextWrapping="Wrap"/>
                             <Border Grid.Row="22" Grid.Column="1" Grid.RowSpan="4" BorderBrush="White" BorderThickness="2,0,0,0" VerticalAlignment="Stretch" Margin="140,0,0,-10"/>
                             <TextBlock Text="Shot Spacing:" Grid.Row="22" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="22" Grid.Column="3" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Grid.Row="22" Grid.Column="3" HorizontalAlignment="Left" Margin="8"
+                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             <TextBlock Text="Witness Panel:" Grid.Row="23" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="23" Grid.Column="3" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Grid.Row="23" Grid.Column="3" HorizontalAlignment="Left" Margin="8"
+                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             <TextBlock Text="Obliquity:" Grid.Row="24" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="24" Grid.Column="3" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Grid.Row="24" Grid.Column="3" HorizontalAlignment="Left" Margin="8"
+                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             <TextBlock Text="Backing Material:" Grid.Row="25" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="25" Grid.Column="3" HorizontalAlignment="Left" Margin="8"/>
+                            <TextBox Grid.Row="25" Grid.Column="3" HorizontalAlignment="Left" Margin="8"
+                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             
                             <Border Grid.Row="26" Grid.ColumnSpan="15" BorderBrush="White" BorderThickness="0,0,0,1" Margin="-20,10,-20,0"/>
                             
@@ -183,8 +270,12 @@
                             <TextBlock Text="Applicable Standards or Procedures" Grid.Row="27" Grid.Column="1" Grid.ColumnSpan="7" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,10,0,10"/>
                             
                             <!-- Standards or Procedures Fields -->
-                            <TextBlock Text="1." Grid.Row="29" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <TextBox Grid.Row="29" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
+                            <ItemsControl ItemsSource="{Binding StandardsTextBoxesIndexes}" Grid.Row="29" Grid.Column="0"  HorizontalAlignment="Left" Margin="8"/>
+                            <ItemsControl ItemsSource="{Binding StandardsTextBoxes}" Grid.Row="29" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
+                            <ItemsControl Grid.Row="29" Grid.Column="2"
+                                          HorizontalAlignment="Left"
+                                          ItemsSource="{Binding StandardsDeleteButtons}"
+                                          Margin="8"/>
                             
                             <Border Grid.Row="30" Grid.ColumnSpan="15" BorderBrush="White" BorderThickness="0,0,0,1" Margin="-20,10,-20,0"/>
                         </Grid>
@@ -192,7 +283,7 @@
                     
                     <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Visible">
                         <!-- The options for the form-->
-                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="10*,90*"
+                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*" RowDefinitions="10*,90*"
                               VerticalAlignment="Stretch"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                             <TextBlock
@@ -207,24 +298,34 @@
                             <TextBlock Grid.Column="2"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
-                                       Text="Str.Vel. Ft/s"/>
+                                       Text="{Binding TrackIdText}"/>
                             
                             <TextBlock Grid.Column="3"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
-                                       Text="PP/CP"/>
+                                       Text="{Binding VelText}"/>
                             
                             <TextBlock Grid.Column="4"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
-                                       Text="Used"/>
+                                       Text="PP/CP"/>
                             
                             <TextBlock Grid.Column="5"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
-                                       Text="Position"/>
+                                       Text="Used"/>
                             
                             <TextBlock Grid.Column="6"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Text="Notes"/>
+                            
+                            <TextBlock Grid.Column="7"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Text="Position"/>
+                            
+                            <TextBlock Grid.Column="8"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
                                        Text="Str.Vel. m/s"/>
@@ -239,8 +340,14 @@
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
                                           ItemsSource="{Binding LoadNumTextBoxes}"/>
+                            
+                            <ItemsControl Grid.Row="1" 
+                                          Grid.Column="2" x:Name="TrackIdControl"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          ItemsSource="{Binding  TrackIdTextBoxes}"/>
                                     
-                            <ItemsControl Grid.Row="1" Grid.Column="2" 
+                            <ItemsControl Grid.Row="1" Grid.Column="3" 
                                           x:Name="Control"
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
@@ -252,27 +359,32 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                                     
-                            <ItemsControl Grid.Row="1" Grid.Column="3" 
+                            <ItemsControl Grid.Row="1" Grid.Column="4" 
                                           x:Name="ComboControl" 
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
                                           ItemsSource="{Binding PcpComboBoxes}"/>
-                            <ItemsControl Grid.Row="1" Grid.Column="4"
+                            <ItemsControl Grid.Row="1" Grid.Column="5"
                                           x:Name="UsedControl" 
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
                                           ItemsSource="{Binding UsedBlocks}"/>
-                            <ItemsControl Grid.Row="1" Grid.Column="5"
+                            <ItemsControl Grid.Row="1" Grid.Column="6"
+                                          x:Name="NotesControl" 
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          ItemsSource="{Binding NotesTextBoxes}"/>
+                            <ItemsControl Grid.Row="1" Grid.Column="7"
                                           x:Name="PositionControl" 
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
                                           ItemsSource="{Binding PosComboBoxes}"/>
-                            <ItemsControl Grid.Row="1" Grid.Column="6"
+                            <ItemsControl Grid.Row="1" Grid.Column="8"
                                           x:Name="MsControl" 
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
                                           ItemsSource="{Binding MsTextBoxes}"/>
-                            <ItemsControl Grid.Row="1" Grid.Column="7"
+                            <ItemsControl Grid.Row="1" Grid.Column="9"
                                           x:Name="DeleteControl" 
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
@@ -308,7 +420,7 @@
                             Margin="0,10,0,0"/>
                         
                         <!--V50 Summary-->
-                    <Grid Grid.Row="5" ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="*,*,*,*,*,*,*,*"
+                    <Grid Grid.Row="5" ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="*,*,*,*,*,*,*,*,*"
                           VerticalAlignment="Stretch">
                             <!-- left side of the V50 Summary-->
                             <TextBlock Grid.ColumnSpan="9" Text="V50 Summary" 
@@ -396,10 +508,12 @@
                             </Border>
                                 
                             <control:FloatNumTextBox Grid.Row="2" Grid.Column="4" 
-                                                     Text="{Binding V50MinFt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                     Text="{Binding V50MinFt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             
                             <control:FloatNumTextBox Grid.Row="2" Grid.Column="5" 
-                                                     Text="{Binding V50MinMs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                     Text="{Binding V50MinMs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             
                             <Border Grid.Row="3" Grid.Column="3" Classes="TextBlockBorder">
                                 <TextBlock Text="ΔV"/>
@@ -426,12 +540,20 @@
                             </Border>
                             
                             <control:FloatNumTextBox Grid.Row="5" Grid.Column="4"
-                                                     Text="{Binding ExpandedUncertainty}"/>
+                                                     Text="{Binding ExpandedUncertainty}"
+                                                     behaviors:ValidationBehavior.EnableValidation="True"/>
                             
                             <Border Grid.Row="5" Grid.Column="5" Classes="TextBlockBorder">
                                 <TextBlock Text="m/s"
                                            HorizontalAlignment="Left"/>
                             </Border>
+                            <Button Grid.Row="8" Grid.Column="0" 
+                                    HorizontalContentAlignment="Center" 
+                                    VerticalContentAlignment="Center" 
+                                    Command="{Binding ValidateAllCommand}" 
+                                    CommandParameter="{Binding #MainGridContent}">
+                                Submit
+                            </Button>
                         </Grid>                    
                 </Grid>
                 </ScrollViewer>

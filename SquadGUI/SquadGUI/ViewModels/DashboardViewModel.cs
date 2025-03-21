@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using DynamicData;
 using ReactiveUI;
@@ -15,6 +19,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using SquadGUI.Assets;
 using Avalonia.Media;
+using LiveChartsCore.Measure;
 
 namespace SquadGUI.ViewModels;
 
@@ -23,15 +28,24 @@ public class DashboardViewModel : ViewModelBase
     private const int ChartItemsCount = 6;
     private Dictionary<FloatNumTextBox, double> _ppList;
     private Dictionary<FloatNumTextBox, double> _cpList;
+    private Dictionary<ComboBox, string> _selectedItems;
 
     private ObservableCollection<FloatNumTextBox> _numVelNumVelTextBoxes;
-    private ObservableCollection<CustomComboBoxImplement> _pcpComboBoxes;
+    private ObservableCollection<ComboBox> _pcpComboBoxes;
     private ObservableCollection<Border> _textBlocks;
     private ObservableCollection<Border> _usedBlocks;
     private ObservableCollection<NumTextBox> _loadNumTextBoxes;
     private ObservableCollection<ComboBox> _posComboBoxes;
     private ObservableCollection<TextBox> _msTextBoxes;
     private ObservableCollection<Button> _deleteButtons;
+    private ObservableCollection<TextBox> _trackIdTextBoxes;
+    private ObservableCollection<Button> _notesTextBoxes;
+    private ObservableCollection<TextBox> _sampleInfoBoxes;
+    private ObservableCollection<Border> _sampleInfoBoxesIndexes;
+    private ObservableCollection<Button> _sampleDeleteButtons;
+    private ObservableCollection<TextBox> _standardsTextBoxes;
+    private ObservableCollection<Border> _standardsTextBoxesIndexes;
+    private ObservableCollection<Button> _standardsDeleteButtons;
 
     private ISeries[] _series;
     private readonly List<Axis> _axisList;
@@ -39,6 +53,7 @@ public class DashboardViewModel : ViewModelBase
     private readonly LineSeries<double> _v50Series;
     private readonly LineSeries<double> _v50MinSeries;
     private bool _isPaneOpenAttribute;
+
 
     private string _meanValueMs;
     private string _meanValueFt;
@@ -67,8 +82,25 @@ public class DashboardViewModel : ViewModelBase
     private string _selectedProjectile;
     private string _selectedPowder;
     private string _selectedBarrel;
+    private string _selectedModel;
+    private string _selectedSize;
+    private string _selectedMass;
+    private string _selectedCondition;
+    private string _massGrams;
+    private string _massPounds;
+    private string _selectedRangeConfig = "Doppler radar";
+    private string _notes;
+    private string _rangeConfigText;
+    private string _velText; 
+    private string _trackIdText;
+    private string _sampleNumberText;
+    private string _reportNumberText;
 
     private DateTimeOffset? _formDate = DateTimeOffset.Now;
+    private TimeSpan? _formTime = TimeSpan.Parse(DateTime.Now.ToString("HH:mm:ss"));
+
+    public ReactiveCommand<object, Unit> ComboPointerPressed { get; }
+    public ReactiveCommand<Grid,Unit> ValidateAllCommand { get; }
 
 
     //constructor
@@ -111,12 +143,29 @@ public class DashboardViewModel : ViewModelBase
             Name = "V50Min"
         };
 
+        ValidateAllCommand = ReactiveCommand.Create<Grid>(ValidateForm);
+
         Series = new ISeries[] { _lineSeries, _v50Series, _v50MinSeries };
 
         TogglePaneCommand = ReactiveCommand.Create(TogglePane);
 
         _ppList = new Dictionary<FloatNumTextBox, double>();
         _cpList = new Dictionary<FloatNumTextBox, double>();
+
+
+        SampleInfoBoxes = new ObservableCollection<TextBox>();
+        SampleInfoBoxesIndexes = new ObservableCollection<Border>();
+        SampleDeleteButtons = new ObservableCollection<Button>();
+        AddSampleInfoBox();
+        AddSampleInfoIndexBlock();
+        AddSampleDeleteButton();
+
+        StandardsDeleteButtons = new ObservableCollection<Button>();
+        StandardsTextBoxes = new ObservableCollection<TextBox>();
+        StandardsTextBoxesIndexes = new ObservableCollection<Border>();
+        AddStandardsDeleteButton();
+        AddStandardsTextBox();
+        AddStandardsTextIndexBlock();
 
         ChartInputFieldSetup();
         UpdateChart();
@@ -129,13 +178,15 @@ public class DashboardViewModel : ViewModelBase
     {
         //setup number input field
         NumVelTextBoxes = new ObservableCollection<FloatNumTextBox>();
-        PcpComboBoxes = new ObservableCollection<CustomComboBoxImplement>();
+        PcpComboBoxes = new ObservableCollection<ComboBox>();
         TextBlocks = new ObservableCollection<Border>();
         LoadNumTextBoxes = new ObservableCollection<NumTextBox>();
         PosComboBoxes = new ObservableCollection<ComboBox>();
         UsedBlocks = new ObservableCollection<Border>();
         MsTextBoxes = new ObservableCollection<TextBox>();
         DeleteButtons = new ObservableCollection<Button>();
+        TrackIdTextBoxes = new ObservableCollection<TextBox>();
+        NotesTextBoxes = new ObservableCollection<Button>();
 
         for (var i = 0; i < ChartItemsCount + 1; ++i) // +1 bc of the empty box
         {
@@ -147,6 +198,8 @@ public class DashboardViewModel : ViewModelBase
             AddPosComboBox();
             AddMsTextBox();
             AddDeleteButton();
+            AddTrackIdBox();
+            AddNotesBoxes();
         }
     }
 
@@ -327,6 +380,19 @@ public class DashboardViewModel : ViewModelBase
         AddPosComboBox();
         AddMsTextBox();
         AddDeleteButton();
+        AddTrackIdBox();
+        AddNotesBoxes();
+    }
+
+    private void AddButtonsSampleInfo(object? sender, EventArgs e)
+    {
+        if (sender as TextBox != SampleInfoBoxes.Last())
+        {
+            return;
+        }
+        AddSampleInfoBox();
+        AddSampleInfoIndexBlock();
+        AddSampleDeleteButton();
     }
 
     private void AddVelocityNumTextBox()
@@ -367,7 +433,7 @@ public class DashboardViewModel : ViewModelBase
 
     private void AddPcpComboBox()
     {
-        var box = new CustomComboBoxImplement()
+        var box = new ComboBox()
         {
             Width = 100,
             Height = 30,
@@ -440,6 +506,73 @@ public class DashboardViewModel : ViewModelBase
         PosComboBoxes.Add(posComboBox);
     }
 
+    private void AddTrackIdBox()
+    {
+        var textBox = new TextBox()
+        {
+            Opacity = 0.3
+        };
+        if (TrackIdTextBoxes.Count > 0)
+        {
+            TrackIdTextBoxes.Last().Opacity = 1;
+        }
+
+        TrackIdTextBoxes.Add(textBox);
+    }
+
+    private void AddNotesBoxes()
+    {
+        var button = new Button()
+        {
+            Opacity = 0.3,
+        };
+        if (NotesTextBoxes.Count > 0)
+        {
+            NotesTextBoxes.Last().Opacity = 1;
+        }
+
+        var flyout = new Flyout()
+        {
+            Content = new Grid()
+            {
+                Width = 800,
+                Height = 800,
+                Children =
+                {
+                    new TextBox()
+                    {
+                        Width = 750,
+                        Height = 750,
+                        TextWrapping = TextWrapping.Wrap,
+                        Watermark = "Input...",
+                    },
+                }
+            },
+            ShowMode = FlyoutShowMode.Standard,
+            Placement = PlacementMode.Bottom,
+        };
+        flyout.FlyoutPresenterClasses.Add("Bigger");
+
+        FlyoutBase.SetAttachedFlyout(button, flyout);
+        
+        button.Click += (o, e) =>
+        {
+            var sender = o as Control;
+            if (sender != null)
+            {
+                Flyout.ShowAttachedFlyout(sender);
+            }
+        };
+        flyout.Closed += (o, e) =>
+        {
+            button.Content = !string.IsNullOrWhiteSpace(((TextBox)((Grid)flyout.Content).Children[0]).Text)
+                ? "Has notes"
+                : "";
+        };
+
+        NotesTextBoxes.Add(button);
+    }
+
     private void AddLoadNumTextBox()
     {
         var textBox = new NumTextBox()
@@ -474,6 +607,41 @@ public class DashboardViewModel : ViewModelBase
         }
 
         UsedBlocks.Add(border);
+    }
+    
+    private void AddSampleInfoIndexBlock()
+    {
+        var border = new Border()
+        {
+            Opacity = 0.3,
+            Child = new TextBlock()
+            {
+                Text = (SampleInfoBoxesIndexes.Count + 1).ToString(),
+                Opacity = 0.3
+            }
+        };
+        border.Classes.Add("TextBlockBorder");
+        if (SampleInfoBoxesIndexes.Count > 0)
+        {
+            SampleInfoBoxesIndexes.Last().Opacity = 1;
+            SampleInfoBoxesIndexes.Last().Child.Opacity = 1;
+        }
+
+        SampleInfoBoxesIndexes.Add(border);
+    }
+    
+    private void AddSampleInfoBox()
+    {
+        var textBox = new TextBox()
+        {
+            Opacity = 0.3,
+        };
+        if (SampleInfoBoxes.Count > 0)
+        {
+            SampleInfoBoxes.Last().Opacity = 1;
+        }
+        textBox.KeyDown += AddButtonsSampleInfo;
+        SampleInfoBoxes.Add(textBox);
     }
 
     private void AddMsTextBox()
@@ -517,6 +685,19 @@ public class DashboardViewModel : ViewModelBase
                 PcpComboBoxes[index].SelectedIndex = 10;
                 LoadNumTextBoxes[index].Text = string.Empty;
                 PosComboBoxes[index].SelectedIndex = 10;
+                
+                NotesTextBoxes[index].Content = string.Empty;
+                var attachedFlyout = FlyoutBase.GetAttachedFlyout(NotesTextBoxes[index]);
+                if (attachedFlyout is Flyout flyout && flyout.Content is Grid grid)
+                {
+                    var textBox = grid.Children.OfType<TextBox>().FirstOrDefault();
+                    if (textBox != null)
+                    {
+                        textBox.Text = string.Empty;
+                    }
+                }
+                
+                TrackIdTextBoxes[index].Text = string.Empty;
                 return;
             }
 
@@ -528,6 +709,8 @@ public class DashboardViewModel : ViewModelBase
             UsedBlocks.RemoveAt(index);
             MsTextBoxes.RemoveAt(index);
             DeleteButtons.RemoveAt(index);
+            NotesTextBoxes.RemoveAt(index);
+            TrackIdTextBoxes.RemoveAt(index);
             UpdateChart();
 
             for (var i = index; i < TextBlocks.Count; i++)
@@ -543,7 +726,135 @@ public class DashboardViewModel : ViewModelBase
 
         DeleteButtons.Add(button);
     }
+    
+    private void AddSampleDeleteButton()
+    {
+        var pathIcon = new PathIcon()
+        {
+            Data = (Geometry)Application.Current.FindResource("CloseRegular"),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
 
+        var button = new Button()
+        {
+            Content = pathIcon,
+            Opacity = 0.3,
+            IsEnabled = false
+        };
+
+        button.Click += (sender, e) =>
+        {
+            var index = SampleDeleteButtons.IndexOf(button);
+
+            SampleInfoBoxes.RemoveAt(index);
+            SampleInfoBoxesIndexes.RemoveAt(index);
+            SampleDeleteButtons.RemoveAt(index);
+
+            for (var i = index; i < SampleInfoBoxesIndexes.Count; i++)
+            {
+                ((TextBlock)SampleInfoBoxesIndexes[i].Child).Text = (i + 1).ToString();
+            }
+        };
+        if (SampleDeleteButtons.Count > 0)
+        {
+            SampleDeleteButtons.Last().Opacity = 1;
+            SampleDeleteButtons.Last().IsEnabled = true;
+        }
+
+        SampleDeleteButtons.Add(button);
+    }
+
+    private void AddStandardsDeleteButton()
+    {
+        var pathIcon = new PathIcon()
+        {
+            Data = (Geometry)Application.Current.FindResource("CloseRegular"),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
+        var button = new Button()
+        {
+            Content = pathIcon,
+            Opacity = 0.3,
+            IsEnabled = false
+        };
+
+        button.Click += (sender, e) =>
+        {
+            var index = StandardsDeleteButtons.IndexOf(button);
+            if (index >= 0)
+            {
+                // Remove the corresponding standards items
+                StandardsTextBoxes.RemoveAt(index);
+                StandardsTextBoxesIndexes.RemoveAt(index);
+                StandardsDeleteButtons.RemoveAt(index);
+            
+                // Update indexes for remaining items
+                for (var i = index; i < StandardsTextBoxesIndexes.Count; i++)
+                {
+                    ((TextBlock)StandardsTextBoxesIndexes[i].Child).Text = (i + 1).ToString();
+                }
+            }
+        };
+
+        if (StandardsDeleteButtons.Count > 0)
+        {
+            StandardsDeleteButtons.Last().Opacity = 1;
+            StandardsDeleteButtons.Last().IsEnabled = true;
+        }
+
+        StandardsDeleteButtons.Add(button);
+    }
+    private void AddStandardsTextBox()
+    {
+        var textBox = new TextBox()
+        {
+            Opacity = 0.3,
+        };
+        if (StandardsTextBoxes.Count > 0)
+        {
+            StandardsTextBoxes.Last().Opacity = 1;
+        }
+        textBox.KeyDown += AddButtonsStandardsInfo;
+        StandardsTextBoxes.Add(textBox);
+    }
+
+    private void AddStandardsTextIndexBlock()
+    {
+        var border = new Border()
+        {
+            Opacity = 0.3,
+            Child = new TextBlock()
+            {
+                Text = (StandardsTextBoxesIndexes.Count + 1).ToString(),
+                Opacity = 0.3
+            }
+        };
+        border.Classes.Add("TextBlockBorder");
+        if (StandardsTextBoxesIndexes.Count > 0)
+        {
+            StandardsTextBoxesIndexes.Last().Opacity = 1;
+            StandardsTextBoxesIndexes.Last().Child.Opacity = 1;
+        }
+
+        StandardsTextBoxesIndexes.Add(border);
+    }
+
+    private void AddButtonsStandardsInfo(object? sender, EventArgs e)
+    {
+        if (sender as TextBox != StandardsTextBoxes.Last())
+        {
+            return;
+        }
+        AddStandardsTextBox();
+        AddStandardsTextIndexBlock();
+        AddStandardsDeleteButton();
+    }
+
+
+    
     private void UpdateUsedBlock(List<KeyValuePair<FloatNumTextBox, double>> cp,
         List<KeyValuePair<FloatNumTextBox, double>> pp)
     {
@@ -708,6 +1019,32 @@ public class DashboardViewModel : ViewModelBase
         }
     }
 
+    private static string PoundsToGramsString(string pounds)
+    {
+        if (pounds.EndsWith("lb"))
+        {
+            return double.TryParse(pounds.AsSpan(0, pounds.Length - 2), out var valueLb) ? (valueLb * 453.59237).ToString("F3") : "";
+        }
+        return double.TryParse(pounds, out var value) ? (value * 453.59237).ToString("F3") : "";
+    }
+    
+    private static string GramsToPoundsString(string grams)
+    {
+        if (grams.EndsWith('g'))
+        {
+            return double.TryParse(grams.AsSpan(0, grams.Length - 1), out var valueG) ? (valueG / 453.59237).ToString("F3") : "";
+        }
+        return double.TryParse(grams, out var value) ? (value / 453.59237).ToString("F3") : "";
+    }
+
+    private void ValidateForm(Grid mainGrid)
+    {
+        if (mainGrid != null)
+        {
+            Behaviors.ValidationBehavior.ValidateAll(mainGrid);
+        }
+    }
+
     //Button Commands
     public ReactiveCommand<Unit, Unit> TogglePaneCommand { get; }
 
@@ -717,6 +1054,12 @@ public class DashboardViewModel : ViewModelBase
     {
         get => _formDate;
         set => this.RaiseAndSetIfChanged(ref _formDate, value);
+    }
+
+    public TimeSpan? FormTime
+    {
+        get => _formTime;
+        set => this.RaiseAndSetIfChanged(ref _formTime, value);
     }
 
     public string MeanValueMs
@@ -760,7 +1103,7 @@ public class DashboardViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _numVelNumVelTextBoxes, value);
     }
 
-    public ObservableCollection<CustomComboBoxImplement> PcpComboBoxes
+    public ObservableCollection<ComboBox> PcpComboBoxes
     {
         get => _pcpComboBoxes;
         set => this.RaiseAndSetIfChanged(ref _pcpComboBoxes, value);
@@ -800,6 +1143,42 @@ public class DashboardViewModel : ViewModelBase
     {
         get => _deleteButtons;
         set => this.RaiseAndSetIfChanged(ref _deleteButtons, value);
+    }
+
+    public ObservableCollection<Button> SampleDeleteButtons
+    {
+        get => _sampleDeleteButtons;
+        set => this.RaiseAndSetIfChanged(ref _sampleDeleteButtons, value);
+    }
+
+    public ObservableCollection<TextBox> SampleInfoBoxes
+    {
+        get => _sampleInfoBoxes;
+        set => this.RaiseAndSetIfChanged(ref _sampleInfoBoxes, value);
+    }
+
+    public ObservableCollection<Border> SampleInfoBoxesIndexes
+    {
+        get => _sampleInfoBoxesIndexes;
+        set => this.RaiseAndSetIfChanged(ref _sampleInfoBoxesIndexes, value);
+    }
+    
+    public ObservableCollection<Button> StandardsDeleteButtons
+    {
+        get => _standardsDeleteButtons;
+        set => this.RaiseAndSetIfChanged(ref _standardsDeleteButtons, value);
+    }
+
+    public ObservableCollection<Border> StandardsTextBoxesIndexes
+    {
+        get => _standardsTextBoxesIndexes;
+        set => this.RaiseAndSetIfChanged(ref _standardsTextBoxesIndexes, value);
+    }
+
+    public ObservableCollection<TextBox> StandardsTextBoxes
+    {
+        get => _standardsTextBoxes;
+        set => this.RaiseAndSetIfChanged(ref _standardsTextBoxes, value);
     }
 
     public List<Axis> AxisList
@@ -961,7 +1340,6 @@ public class DashboardViewModel : ViewModelBase
             {
                 this.RaiseAndSetIfChanged(ref _fahrenheitText, CelsiusToFahrenheitString(value));
             }
-
             this.RaisePropertyChanged(nameof(FahrenheitText));
         }
     }
@@ -1008,5 +1386,220 @@ public class DashboardViewModel : ViewModelBase
         get => _selectedBarrel;
         set => this.RaiseAndSetIfChanged(ref _selectedBarrel, value);
     }
+
+    public ObservableCollection<TextBox> TrackIdTextBoxes
+    {
+        get => _trackIdTextBoxes;
+        set => this.RaiseAndSetIfChanged(ref _trackIdTextBoxes, value);
+    }
+
+    public ObservableCollection<Button> NotesTextBoxes
+    {
+        get => _notesTextBoxes;
+        set => this.RaiseAndSetIfChanged(ref _notesTextBoxes, value);
+    }
+
+    public string Notes
+    {
+        get => _notes;
+        set => this.RaiseAndSetIfChanged(ref _notes, value);
+    }
+
+    public string SelectedModel
+    {
+        get => _selectedModel;
+        set => _selectedModel = value;
+    }
+
+    public string SelectedSize
+    {
+        get => _selectedSize;
+        set => _selectedSize = value;
+    }
+
+    public string SelectedMass
+    {
+        get => _selectedMass;
+        set => _selectedMass = value;
+    }
+
+    public string SelectedCondition
+    {
+        get => _selectedCondition;
+        set => this.RaiseAndSetIfChanged(ref _selectedCondition, value);
+    }
+
+    public string MassGrams
+    {
+        get => _massGrams;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _massGrams, value);
+            if (!string.IsNullOrEmpty(value))
+            {
+                this.RaiseAndSetIfChanged(ref _massPounds, GramsToPoundsString(value) + " lb");
+            }
+            else
+            {
+                this.RaiseAndSetIfChanged(ref _massPounds, GramsToPoundsString(value));
+            }
+
+            this.RaisePropertyChanged(nameof(MassPounds));  
+        } 
+    }
+
+
+    public string MassPounds
+    {
+        get => _massPounds;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _massPounds, value);
+            if (!string.IsNullOrEmpty(value))
+            {
+                this.RaiseAndSetIfChanged(ref _massGrams, PoundsToGramsString(value) + " g");
+            }
+            else
+            {
+                this.RaiseAndSetIfChanged(ref _massGrams, PoundsToGramsString(value));
+            } 
+            this.RaisePropertyChanged(nameof(MassGrams));
+        }
+    }
+
+    public string SelectedRangeConfig
+    {
+        get => _selectedRangeConfig;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedRangeConfig, value);
+            if (SelectedRangeConfig == "Doppler radar")
+            {
+                RangeConfigText = "Infinition inc. JB-6e Junction box , BR-3502 Doppler Radar Tx: 35.505 GHz ";
+                TrackIdText = "Track ID";
+                VelText = "Str.Vel. Ft/s";
+            }
+            else
+            {
+                RangeConfigText = "Muzzle to  Primary Screens: 5 feet\nDistance Between Primary Screens: 5 feet\nDistance Between Secondary Screens: 5 feet\nDistance from Primary Screens to the Target: 5 feet\nTotal Range Distance: 15 feet";
+                TrackIdText = "Vel.1 ft/s";
+                VelText = "Vel.2 ft/s";
+            }
+        }
+    }
+
+    public Collection<string> HelmetTypes { get; } = new Collection<string> 
+    { 
+        "Viper", "Cobra", "CAMALUS", "Virtus", "Visor", "Mandible"
+    };
+    
+    public Collection<string> HelmetSize { get; } = new Collection<string> 
+    { 
+        "Small", "Medium", "Large", "X-Large", "Small MidCut", "Medium MidCut", "Large MidCut", "X-Large MidCut", "Small HiCut", "Medium HiCut", "Large HiCut", "X-Large HiCut"
+    };
+
+    public Collection<string> ShellDescriptions { get; } = new Collection<string>
+    {
+        "Raw  (no edge trim or paint)",
+        "Unpainted (edge trim, no paint)",
+        "Finished (trimmed and painted)"
+    };
+
+    public Collection<string> Conditions { get; } = new Collection<string>()
+    {
+        "Hot", "Cold", "Temp Shock", "Wet", "Seawater", "WM", "Ambient"
+    };
+
+    public Collection<string> Projectiles { get; } = new Collection<string>()
+    {
+        "2 gr RCC",
+        "4 gr RCC",
+        "16 gr RCC",
+        "17 gr FSP",
+        "44 gr FSP",
+        "64 gr RCC",
+        "9 mm FMJ 124 gr",
+        "7.62x39 mm FMJ 123 gr",
+        "7.62 mm M80 BALL (C21)",
+        "7.62 mm M61 (P80)",
+        "7.62 mm APM 2",
+        "5.56x45 mm M855",
+        "5.56x45 mm M193",
+        "7.62x39 mm PS",
+        ".44 Mag HSP 240 gr",
+        ".357 Sig",
+        "17 gr FSP Untumbled"
+    };
+
+    public ObservableCollection<string> PowderTypes { get; } = new ObservableCollection<string>
+    {
+        "N310",
+        "H-110",
+        "Varget",
+        "Red Dot",
+        "The Group",
+        "N140",
+        "IMR 4198",
+        "HS-6",
+        "IMR 4350",
+        "H380",
+        "IMR 4227",
+        "IMR 4064"
+    };
+    
+    public Collection<string> BarrelType { get; } = new Collection<string>()
+    {
+        "5.56 mm",
+        "5.56 Sabot",
+        "7.62x39mm",
+        ".308 Win",
+        ".308 Win Sabot",
+        "30-06 Springfield",
+        "30-06 Springfield Sabot",
+        ".300 Win Mag",
+        ".300 Win Mag Sabot",
+        ".220 Swift",
+        ".22 Hornet",
+        "9 mm",
+        ".44 Mag",
+        ".357 Mag",
+        ".50 BMG Sabot"
+    };
+
+    public Collection<string> RangeTypes { get; } = new Collection<string>()
+    {
+        "Doppler radar",
+        "Light Screens"
+    };
+
+    public string RangeConfigText
+    {
+        get => _rangeConfigText;
+        set => this.RaiseAndSetIfChanged(ref _rangeConfigText, value);
+    }
+
+    public string VelText
+    {
+        get => _velText;
+        set => this.RaiseAndSetIfChanged(ref _velText, value);
+    }
+
+    public string TrackIdText
+    {
+        get => _trackIdText;
+        set => this.RaiseAndSetIfChanged(ref _trackIdText, value);
+    }
+
+    public string SampleNumberText
+    {
+        get => _sampleNumberText;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _sampleNumberText, value);
+            this.RaisePropertyChanged(nameof(SampleReportNumberText));
+        }
+    }
+
+    public string SampleReportNumberText { get => _sampleNumberText.ToUpper().Trim(); }
 }
     

@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using SquadGUI.Assets;
+using SquadGUI.Behaviors;
 using SquadGUI.ViewModels;
 
 
