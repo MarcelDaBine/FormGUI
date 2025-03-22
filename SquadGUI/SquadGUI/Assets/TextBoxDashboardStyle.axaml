@@ -9,10 +9,13 @@
     <!-- Dashboard TextBox style-->
         <Style Selector="TextBox">
             <Setter Property="Watermark" Value="Input..."/>
-            <Setter Property="Height" Value="6"/>
-            <Setter Property="MinWidth" Value="250"/>
-            <Setter Property="Width" Value="300"/>
+            <Setter Property="Height" Value="5"/>
+            <Setter Property="MinWidth" Value="150"/>
+            <Setter Property="MaxWidth" Value="300"/>
             <Setter Property="Margin" Value="10"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="BorderBrush" Value="LightSlateGray"/>
+            <Setter Property="Background" Value="LightGray"/>
         </Style>
 </Styles>

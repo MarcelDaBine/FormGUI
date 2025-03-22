@@ -5,17 +5,49 @@
             <!-- Add Controls for Previewer Here -->
         </Border>
     </Design.PreviewWith>
+    
     <Style Selector="TextBlock">
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+        <Setter Property="Foreground" Value="Black"/>
     </Style>
+    
     <Style Selector="Border.TextBlockBorder">
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="BorderBrush" Value="DimGray"/>
+        <Setter Property="BorderBrush" Value="LightSlateGray"/><!-- gray boarder test -->
         <Setter Property="Padding" Value="5"/>
         <Setter Property="Margin" Value="10"/>
         <Setter Property="Height" Value="32"/>
         <Setter Property="Width" Value="100"/>
+    </Style>
+    
+    <!-- General Border Style for Form Lines -->
+    <Style Selector="Border.FormBorder">
+        <Setter Property="BorderBrush" Value="LightSlateGray"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+    </Style>
+    
+    <!-- Main title style -->
+    <Style Selector="TextBlock.TitleText">
+        <Setter Property="FontSize" Value="27"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Margin" Value="10,20,10,10"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+    </Style>
+    
+    <!-- mid-section Titles style -->
+    <Style Selector="TextBlock.SectionText">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Margin" Value="10,20,10,10"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
     </Style>
 </Styles>
