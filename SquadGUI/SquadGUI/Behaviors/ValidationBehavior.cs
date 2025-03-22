@@ -1,10 +1,13 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using System.Linq;
 using Avalonia.Controls.Primitives;
+using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
+using ReactiveUI;
 
 namespace SquadGUI.Behaviors;
 
@@ -13,6 +16,9 @@ public class ValidationBehavior : AvaloniaObject
     // Register attached property
     public static readonly AttachedProperty<bool> EnableValidationProperty =
         AvaloniaProperty.RegisterAttached<ValidationBehavior, Control, bool>("EnableValidation");
+    
+    public static readonly AttachedProperty<bool> IsControlProperty =
+        AvaloniaProperty.RegisterAttached<ValidationBehavior, Control, bool>("IsControl");
 
     // Register the property changed callback
     static ValidationBehavior()
@@ -24,6 +30,9 @@ public class ValidationBehavior : AvaloniaObject
     // Get and set methods for the attached property
     public static void SetEnableValidation(AvaloniaObject element, bool value) => element.SetValue(EnableValidationProperty, value);
     public static bool GetEnableValidation(AvaloniaObject element) => element.GetValue(EnableValidationProperty);
+    
+    public static void SetIsControl(AvaloniaObject element, bool value) => element.SetValue(IsControlProperty, value);
+    public static bool GetIsControl(AvaloniaObject element) => element.GetValue(IsControlProperty);
 
     // Handle when the attached property changes
     private static void EnableValidationChanged(AvaloniaObject element, bool isEnabled)
@@ -44,7 +53,7 @@ public class ValidationBehavior : AvaloniaObject
         {
             textBox.PropertyChanged += (sender, args) =>
             {
-                if (args.Property.Name == nameof(TextBox.Text))
+                if (args.Property.Name == nameof(TextBox.IsFocused) || args.Property.Name == nameof(TextBox.Text))
                     ValidateControl(textBox);
             };
         }
@@ -59,27 +68,55 @@ public class ValidationBehavior : AvaloniaObject
     }
 
     // Validate all controls inside the parent panel
-    public static void ValidateAll(Panel parent)
+    public static bool ValidateAll(Panel parent)
     {
+        var boxes = parent.GetVisualDescendants()
+            .OfType<TemplatedControl>()
+            .Where(GetEnableValidation);
         var controls = parent.GetVisualDescendants()
-                             .OfType<TemplatedControl>()
-                             .Where(GetEnableValidation);
+            .OfType<TemplatedControl>()
+            .Where(GetIsControl);
+        
+        var isGood = true;
 
-        foreach (var control in controls)
+        foreach (var box in boxes)
         {
-            ValidateControl(control);
+            if (!ValidateControl(box))
+            {
+                isGood = false;
+            }
         }
+        
+        var itemsControls = parent.GetVisualDescendants()
+            .OfType<ItemsControl>()
+            .Where(GetIsControl); // Use this to filter only the ItemsControls you want
+
+        foreach (var ic in itemsControls)
+        {
+            foreach (var control in ic.Items.OfType<TemplatedControl>())
+            {
+                if (GetEnableValidation(control) && !ValidateControl(control))
+                {
+                    isGood = false;
+                }
+            }
+        }
+
+
+        return isGood;
     }
 
     // Perform validation on a single control
-    private static void ValidateControl(TemplatedControl control)
+    
+    private static bool ValidateControl(TemplatedControl control)
     {
-        bool isValid = control switch
+        var isValid = control switch
         {
-            TextBox textBox => !string.IsNullOrWhiteSpace(textBox.Text),
+            TextBox textBox => !string.IsNullOrEmpty(textBox.Text),
             ComboBox comboBox => comboBox.IsDropDownOpen || comboBox.SelectedItem != null,
             _ => true
         };
         control.BorderBrush = isValid ? Brushes.Gray : Brushes.Red;
+        return isValid;
     }
 }

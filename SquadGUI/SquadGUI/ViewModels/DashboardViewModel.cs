@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -30,11 +34,11 @@ public class DashboardViewModel : ViewModelBase
     private Dictionary<FloatNumTextBox, double> _cpList;
     private Dictionary<ComboBox, string> _selectedItems;
 
+    private ObservableCollection<Border> _textBlocks;
     private ObservableCollection<FloatNumTextBox> _numVelNumVelTextBoxes;
     private ObservableCollection<ComboBox> _pcpComboBoxes;
-    private ObservableCollection<Border> _textBlocks;
     private ObservableCollection<Border> _usedBlocks;
-    private ObservableCollection<NumTextBox> _loadNumTextBoxes;
+    private ObservableCollection<FloatNumTextBox> _loadNumTextBoxes;
     private ObservableCollection<ComboBox> _posComboBoxes;
     private ObservableCollection<TextBox> _msTextBoxes;
     private ObservableCollection<Button> _deleteButtons;
@@ -89,18 +93,26 @@ public class DashboardViewModel : ViewModelBase
     private string _massGrams;
     private string _massPounds;
     private string _selectedRangeConfig = "Doppler radar";
-    private string _notes;
     private string _rangeConfigText;
     private string _velText; 
     private string _trackIdText;
+    private string _lotNo;
     private string _sampleNumberText;
     private string _reportNumberText;
+    private string _client;
+    private string _description;
+    private string _optionalInfoText;
+    private string _shotSpacing;
+    private string _witnessPanel;
+    private string _obliquity;
+    private string _backingMaterial;
+    private string _shooter;
+    private string _recorder;
 
     private DateTimeOffset? _formDate = DateTimeOffset.Now;
     private TimeSpan? _formTime = TimeSpan.Parse(DateTime.Now.ToString("HH:mm:ss"));
-
-    public ReactiveCommand<object, Unit> ComboPointerPressed { get; }
     public ReactiveCommand<Grid,Unit> ValidateAllCommand { get; }
+    public ReactiveCommand<string, Unit> DeserializeCommand { get;}
 
 
     //constructor
@@ -144,6 +156,7 @@ public class DashboardViewModel : ViewModelBase
         };
 
         ValidateAllCommand = ReactiveCommand.Create<Grid>(ValidateForm);
+        DeserializeCommand = ReactiveCommand.Create<string>(Deserialize);
 
         Series = new ISeries[] { _lineSeries, _v50Series, _v50MinSeries };
 
@@ -180,7 +193,7 @@ public class DashboardViewModel : ViewModelBase
         NumVelTextBoxes = new ObservableCollection<FloatNumTextBox>();
         PcpComboBoxes = new ObservableCollection<ComboBox>();
         TextBlocks = new ObservableCollection<Border>();
-        LoadNumTextBoxes = new ObservableCollection<NumTextBox>();
+        LoadNumTextBoxes = new ObservableCollection<FloatNumTextBox>();
         PosComboBoxes = new ObservableCollection<ComboBox>();
         UsedBlocks = new ObservableCollection<Border>();
         MsTextBoxes = new ObservableCollection<TextBox>();
@@ -329,20 +342,6 @@ public class DashboardViewModel : ViewModelBase
     {
         switch (sender)
         {
-            case NumTextBox numTextBox:
-                if (numTextBox == LoadNumTextBoxes.Last())
-                {
-                    break;
-                }
-
-                if ((e as KeyEventArgs)?.Key == Key.Enter)
-                {
-
-                    LoadNumTextBoxes[LoadNumTextBoxes.IndexOf(numTextBox) + 1].Focus();
-                }
-
-                return;
-
             case FloatNumTextBox floatNumTextBox:
                 if (floatNumTextBox == NumVelTextBoxes.Last())
                 {
@@ -401,7 +400,7 @@ public class DashboardViewModel : ViewModelBase
         {
             Opacity = 0.3
         };
-
+        Behaviors.ValidationBehavior.SetEnableValidation(numTextBox, true);
         numTextBox.KeyDown += AddButtons;
         numTextBox.PropertyChanged += ((o, args) =>
         {
@@ -456,6 +455,8 @@ public class DashboardViewModel : ViewModelBase
             PcpComboBoxes.Last().Opacity = 1;
         }
 
+        Behaviors.ValidationBehavior.SetEnableValidation(box, true);
+
         PcpComboBoxes.Add(box);
     }
 
@@ -502,6 +503,7 @@ public class DashboardViewModel : ViewModelBase
         {
             PosComboBoxes.Last().Opacity = 1;
         }
+        Behaviors.ValidationBehavior.SetEnableValidation(posComboBox, true);
 
         PosComboBoxes.Add(posComboBox);
     }
@@ -516,7 +518,7 @@ public class DashboardViewModel : ViewModelBase
         {
             TrackIdTextBoxes.Last().Opacity = 1;
         }
-
+        Behaviors.ValidationBehavior.SetEnableValidation(textBox, true);
         TrackIdTextBoxes.Add(textBox);
     }
 
@@ -575,7 +577,7 @@ public class DashboardViewModel : ViewModelBase
 
     private void AddLoadNumTextBox()
     {
-        var textBox = new NumTextBox()
+        var textBox = new FloatNumTextBox()
         {
             Opacity = 0.3
         };
@@ -584,7 +586,7 @@ public class DashboardViewModel : ViewModelBase
         {
             LoadNumTextBoxes.Last().Opacity = 1;
         }
-
+        Behaviors.ValidationBehavior.SetEnableValidation(textBox, true);
         LoadNumTextBoxes.Add(textBox);
     }
 
@@ -1039,11 +1041,164 @@ public class DashboardViewModel : ViewModelBase
 
     private void ValidateForm(Grid mainGrid)
     {
-        if (mainGrid != null)
+        if (mainGrid == null)
         {
-            Behaviors.ValidationBehavior.ValidateAll(mainGrid);
+            return;
         }
+
+        if (!Behaviors.ValidationBehavior.ValidateAll(mainGrid))
+        {
+            return;
+        }
+        
+        var shots = new List<object>();
+        
+        for (var i = 0; i < _numVelNumVelTextBoxes.Count; i++)
+        {
+            var noteText = _notesTextBoxes[i].Content?.ToString();
+            var row = new
+            {
+                load = double.Parse(_loadNumTextBoxes[i].Text),
+                trackID = _trackIdTextBoxes[i].Text,
+                strVelFt = double.Parse(_numVelNumVelTextBoxes[i].Text),
+                strVelMs = double.Parse(_msTextBoxes[i].Text),
+                ppCp = _pcpComboBoxes[i].SelectedItem?.ToString(),
+                used = _usedBlocks[i].Classes.Contains("Y"),
+                notes = string.IsNullOrEmpty(noteText) ? null : noteText,
+                position = _posComboBoxes[i].SelectedItem?.ToString()
+            };
+
+            shots.Add(row);
+        }
+
+        var data = new
+        {
+            date = _formDate?.ToString("yyyy-MM-dd"),
+            time = _formTime?.ToString(@"hh\:mm"),
+            temperatureC = double.Parse(_celsiusText.Substring(0, _celsiusText.Length - 2).Trim()),
+            temperatureF = double.Parse(_fahrenheitText.Substring(0, _fahrenheitText.Length - 2).Trim()),
+            humidity = double.Parse(_humidityText.Substring(0, _humidityText.Length - 1).Trim()),
+            lotNo = LotNo, //fix empty shit
+            client = Client,
+            reportNumber = _reportNumberText,
+            sampleNumber = _sampleNumberText,
+            description = Description,
+            model = _selectedModel,
+            size = _selectedSize,
+            mass = _selectedMass,
+            grams = double.Parse(_massGrams.Substring(0, _massGrams.Length - 1).Trim()),
+            pounds = double.Parse(_massPounds.Substring(0, _massPounds.Length - 2).Trim()),
+            condition = _selectedCondition,
+            optionalInfoText = OptionalInfoText,
+            inputRowsInfo = "list",
+            projectile = _selectedProjectile,
+            powder = _selectedPowder,
+            barrel = _selectedBarrel,
+            sensor = _selectedRangeConfig,
+            shotSpacing = _shotSpacing,
+            witnessPanel = _witnessPanel,
+            obliquity = _obliquity,
+            backingMaterial = _backingMaterial,
+            inputFieldsProc = "list",
+
+            // Chart fields
+            v50ValueM = double.Parse(_meanValueMs),
+            v50ValueFt = _meanValueFt,
+            highPartialM = _highPartialMs,
+            highPartialFt = _highPartialFt,
+            lowCompleteM = _lowCompleteMs,
+            lowCompleteFt = _lowCompleteFt,
+            mixedResultsM = _mixedResultsMs,
+            mixedResultsFt = _mixedResultsFt,
+            gapM = _gapMs,
+            gapFt = _gapFt,
+            rangeResultsM = _rangeResultsMs,
+            rangeResultsFt = _rangeResultsFt,
+            v50MinFt = _v50MinFt,
+            v50MinM = _v50MinMs,
+            deltaVM = _deltaVMs,
+            deltaVFt = _deltaVFt,
+            percentageM = _percentageMs,
+            percentageFt = _percentageFt,
+            expandedUncertainty = _expandedUncertainty,
+            decisionRule = _decisionRule,
+            data = shots
+        };
+
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        string json = JsonSerializer.Serialize(data, options);
+
+        // You can write it to a file or just debug output
+        File.WriteAllText("formData.json", json); // saves next to your .exe
+        Console.WriteLine(json); // or Debug.WriteLine(json) if in Avalonia GUI
     }
+
+    private void Deserialize(string filePath)
+    {
+        Console.WriteLine(Directory.GetCurrentDirectory());
+        var json = File.ReadAllText("../../../da.json");
+        var report = JsonSerializer.Deserialize<ReportModel>(json);
+
+        LoadFromModel(report); // via reflection
+    }
+
+    private void LoadFromModel(ReportModel report)
+    {
+        FormDate = DateTimeOffset.TryParse(report.FormDate, out var dt) ? dt : DateTimeOffset.Now;
+        FormTime = TimeSpan.TryParse(report.FormTime, out var ts) ? ts : TimeSpan.Parse(DateTime.Now.ToString("HH:mm"));
+        SelectedModel = report.SelectedModel;
+        SelectedSize = report.SelectedSize;
+        SelectedMass = report.SelectedMass;
+        MassGrams = report.MassGrams.ToString();
+        MassPounds = report.MassPounds.ToString();
+        SelectedCondition = report.SelectedCondition;
+        OptionalInfoText = report.OptionalInfoText;
+        SelectedProjectile = report.SelectedProjectile;
+        SelectedModel = report.SelectedModel;
+        SelectedPowder = report.SelectedPowder;
+        SelectedBarrel = report.SelectedBarrel;
+        SelectedRangeConfig = report.SelectedRangeConfig;
+        //RangeConfigText = report.RangeConfigText;
+        ShotSpacing = report.ShotSpacing;
+        WitnessPanel = report.WitnessPanel;
+        Obliquity = report.Obliquity;
+        BackingMaterial = report.BackingMaterial;
+        MeanValueMs = report.MeanValueMs.ToString();
+        MeanValueFt = report.MeanValueFt.ToString();
+        HighPartialMs = report.HighPartialMs.ToString();
+        HighPartialFt = report.HighPartialFt.ToString();
+        LowCompleteMs = report.LowCompleteMs.ToString();
+        LowCompleteFt = report.LowCompleteFt.ToString();
+        MixedResultsMs = report.MixedResultsMs;
+        MixedResultsFt = report.MixedResultsFt;
+        GapMs = report.GapMs;
+        GapFt = report.GapFt;
+        RangeResultsMs = report.RangeResultsMs.ToString();
+        RangeResultsFt = report.RangeResultsFt.ToString();
+        V50MinFt = report.V50MinFt.ToString();
+        V50MinMs = report.V50MinMs.ToString();
+        DeltaVMs = report.DeltaVMs.ToString();
+        DeltaVFt = report.DeltaVFt.ToString();
+        PercentageFt = report.PercentageFt.ToString();
+        PercentageMs = report.PercentageMs.ToString();
+        ExpandedUncertainty = report.ExpandedUncertainty;
+        DecisionRule = report.DecisionRule;
+        LotNo = report.LotNo.ToString();
+        Client = report.Client;
+        Shooter = report.Shooter;
+        SampleNumberText = report.SampleNumberText;
+        Description = report.Description;
+        CelsiusText = report.CelsiusText.ToString();
+        FahrenheitText = report.FahrenheitText.ToString();
+        HumidityText = report.HumidityText.ToString();
+        Recorder = report.Recorder;
+    }
+
 
     //Button Commands
     public ReactiveCommand<Unit, Unit> TogglePaneCommand { get; }
@@ -1115,7 +1270,7 @@ public class DashboardViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _textBlocks, value);
     }
 
-    public ObservableCollection<NumTextBox> LoadNumTextBoxes
+    public ObservableCollection<FloatNumTextBox> LoadNumTextBoxes
     {
         get => _loadNumTextBoxes;
         set => this.RaiseAndSetIfChanged(ref _loadNumTextBoxes, value);
@@ -1399,28 +1554,22 @@ public class DashboardViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _notesTextBoxes, value);
     }
 
-    public string Notes
-    {
-        get => _notes;
-        set => this.RaiseAndSetIfChanged(ref _notes, value);
-    }
-
     public string SelectedModel
     {
         get => _selectedModel;
-        set => _selectedModel = value;
+        set => this.RaiseAndSetIfChanged(ref _selectedModel, value);
     }
 
     public string SelectedSize
     {
         get => _selectedSize;
-        set => _selectedSize = value;
+        set => this.RaiseAndSetIfChanged(ref _selectedSize, value);
     }
 
     public string SelectedMass
     {
         get => _selectedMass;
-        set => _selectedMass = value;
+        set => this.RaiseAndSetIfChanged(ref _selectedMass, value);
     }
 
     public string SelectedCondition
@@ -1598,6 +1747,65 @@ public class DashboardViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _sampleNumberText, value);
             this.RaisePropertyChanged(nameof(SampleReportNumberText));
         }
+    }
+
+    public string LotNo
+    {
+        get => _lotNo;
+        set => this.RaiseAndSetIfChanged(ref _lotNo, value);
+    }
+    public string Client
+    {
+        get => _client;
+        set => this.RaiseAndSetIfChanged(ref _client, value);
+    }
+
+    public string Description
+    {
+        get => _description;
+        set => this.RaiseAndSetIfChanged(ref _description, value);
+    }
+
+    public string OptionalInfoText
+    {
+        get => _optionalInfoText;
+        set => this.RaiseAndSetIfChanged(ref _optionalInfoText, value);
+    }
+
+    public string ShotSpacing
+    {
+        get => _shotSpacing;
+        set => this.RaiseAndSetIfChanged(ref _shotSpacing, value);
+    }
+
+    public string WitnessPanel
+    {
+        get => _witnessPanel;
+        set => this.RaiseAndSetIfChanged(ref _witnessPanel, value);
+    }
+
+    public string Obliquity
+    {
+        get => _obliquity;
+        set => this.RaiseAndSetIfChanged(ref _obliquity, value);
+    }
+
+    public string BackingMaterial
+    {
+        get => _backingMaterial;
+        set => this.RaiseAndSetIfChanged(ref _backingMaterial, value);
+    }
+
+    public string Shooter
+    {
+        get => _shooter;
+        set => this.RaiseAndSetIfChanged(ref _shooter, value);
+    }
+
+    public string Recorder
+    {
+        get => _recorder;
+        set => this.RaiseAndSetIfChanged(ref _recorder, value);
     }
 
     public string SampleReportNumberText { get => _sampleNumberText.ToUpper().Trim(); }
