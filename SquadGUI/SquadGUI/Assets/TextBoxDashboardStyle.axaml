@@ -15,6 +15,7 @@
             <Setter Property="Margin" Value="10"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="CornerRadius" Value="5"/>
-            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderBrush" Value="LightSlateGray"/>
+            <Setter Property="Background" Value="LightGray"/>
         </Style>
 </Styles>
