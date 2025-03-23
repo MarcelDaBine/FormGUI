@@ -5,162 +5,179 @@ using System.Text.Json.Serialization;
 public class ReportModel
 {
     [JsonPropertyName("date")]
-    public string FormDate { get; set; }
+    public string? Date { get; set; }
 
     [JsonPropertyName("time")]
-    public string FormTime { get; set; }
+    public string? Time { get; set; }
 
     [JsonPropertyName("shooter")]
-    public string Shooter { get; set; }
+    public string? Shooter { get; set; }
 
     [JsonPropertyName("recorder")]
-    public string Recorder { get; set; }
+    public string? Recorder { get; set; }
 
     [JsonPropertyName("temperatureC")]
-    public double CelsiusText { get; set; }
+    public double? TemperatureC { get; set; }
 
     [JsonPropertyName("temperatureF")]
-    public double FahrenheitText { get; set; }
+    public double? TemperatureF { get; set; }
 
     [JsonPropertyName("humidity")]
-    public double HumidityText { get; set; }
+    public double? Humidity { get; set; }
 
     [JsonPropertyName("lotNo")]
-    public double LotNo { get; set; }
+    public double? LotNo { get; set; }
 
     [JsonPropertyName("client")]
-    public string Client { get; set; }
+    public string? Client { get; set; }
 
     [JsonPropertyName("reportNumber")]
-    public string ReportNumberText { get; set; }
+    public string? ReportNumber { get; set; }
 
     [JsonPropertyName("sampleNumber")]
-    public string SampleNumberText { get; set; }
+    public string? SampleNumber { get; set; }
 
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     [JsonPropertyName("model")]
-    public string SelectedModel { get; set; }
+    public string? Model { get; set; }
 
     [JsonPropertyName("size")]
-    public string SelectedSize { get; set; }
+    public string? Size { get; set; }
 
     [JsonPropertyName("mass")]
-    public string SelectedMass { get; set; }
+    public string? Mass { get; set; }
 
     [JsonPropertyName("grams")]
-    public double MassGrams { get; set; }
+    public double? Grams { get; set; }
 
     [JsonPropertyName("pounds")]
-    public double MassPounds { get; set; }
+    public double? Pounds { get; set; }
 
     [JsonPropertyName("condition")]
-    public string SelectedCondition { get; set; }
+    public string? Condition { get; set; }
 
     [JsonPropertyName("optionalInfoText")]
-    public string OptionalInfoText { get; set; }
+    public string? OptionalInfoText { get; set; }
 
     [JsonPropertyName("inputRowsInfo")]
-    public List<string> InputRowsInfo { get; set; }
+    public List<string>? InputRowsInfo { get; set; }
 
     [JsonPropertyName("projectile")]
-    public string SelectedProjectile { get; set; }
+    public string? Projectile { get; set; }
 
     [JsonPropertyName("powder")]
-    public string SelectedPowder { get; set; }
+    public string? Powder { get; set; }
 
     [JsonPropertyName("barrel")]
-    public string SelectedBarrel { get; set; }
+    public string? Barrel { get; set; }
 
     [JsonPropertyName("sensor")]
-    public string SelectedRangeConfig { get; set; }
+    public string? Sensor { get; set; }
 
     [JsonPropertyName("shotSpacing")]
-    public string ShotSpacing { get; set; }
+    public string? ShotSpacing { get; set; }
 
     [JsonPropertyName("witnessPanel")]
-    public string WitnessPanel { get; set; }
+    public string? WitnessPanel { get; set; }
 
     [JsonPropertyName("obliquity")]
-    public string Obliquity { get; set; }
+    public string? Obliquity { get; set; }
 
     [JsonPropertyName("backingMaterial")]
-    public string BackingMaterial { get; set; }
+    public string? BackingMaterial { get; set; }
 
     [JsonPropertyName("inputRowsProc")]
-    public List<string> InputRowsProc { get; set; }
+    public List<string>? InputRowsProc { get; set; }
 
     [JsonPropertyName("v50ValueM")]
-    public double MeanValueMs { get; set; }
+    public double? V50ValueM { get; set; }
 
     [JsonPropertyName("v50ValueFt")]
-    public double MeanValueFt { get; set; }
+    public double? V50ValueFt { get; set; }
 
     [JsonPropertyName("highPartialM")]
-    public double HighPartialMs { get; set; }
+    public double? HighPartialM { get; set; }
 
     [JsonPropertyName("highPartialFt")]
-    public double HighPartialFt { get; set; }
+    public double? HighPartialFt { get; set; }
 
     [JsonPropertyName("lowCompleteM")]
-    public double LowCompleteMs { get; set; }
+    public double? LowCompleteM { get; set; }
 
     [JsonPropertyName("lowCompleteFt")]
-    public double LowCompleteFt { get; set; }
+    public double? LowCompleteFt { get; set; }
 
     [JsonPropertyName("mixedResultsM")]
-    public string MixedResultsMs { get; set; }
+    public double? MixedResultsM { get; set; }
 
     [JsonPropertyName("mixedResultsFt")]
-    public string MixedResultsFt { get; set; }
+    public double? MixedResultsFt { get; set; }
 
     [JsonPropertyName("gapM")]
-    public string GapMs { get; set; }
+    public double? GapM { get; set; }
 
     [JsonPropertyName("gapFt")]
-    public string GapFt { get; set; }
+    public double? GapFt { get; set; }
 
     [JsonPropertyName("rangeResultsM")]
-    public double RangeResultsMs { get; set; }
+    public double? RangeResultsM { get; set; }
 
     [JsonPropertyName("rangeResultsFt")]
-    public double RangeResultsFt { get; set; }
-
-    [JsonPropertyName("v50MinFt")]
-    public double V50MinFt { get; set; }
+    public double? RangeResultsFt { get; set; }
 
     [JsonPropertyName("v50MinM")]
-    public double V50MinMs { get; set; }
+    public double? V50MinM { get; set; }
+
+    [JsonPropertyName("v50MinFt")]
+    public double? V50MinFt { get; set; }
 
     [JsonPropertyName("deltaVM")]
-    public double DeltaVMs { get; set; }
+    public double? DeltaVM { get; set; }
 
     [JsonPropertyName("deltaVFt")]
-    public double DeltaVFt { get; set; }
-
-    [JsonPropertyName("percentageFt")]
-    public double PercentageFt { get; set; }
+    public double? DeltaVFt { get; set; }
 
     [JsonPropertyName("percentageM")]
-    public double PercentageMs { get; set; }
+    public double? PercentageM { get; set; }
+
+    [JsonPropertyName("percentageFt")]
+    public double? PercentageFt { get; set; }
 
     [JsonPropertyName("expandedUncertainty")]
-    public string ExpandedUncertainty { get; set; }
+    public double? ExpandedUncertainty { get; set; }
 
     [JsonPropertyName("decisionRule")]
-    public string DecisionRule { get; set; }
+    public string? DecisionRule { get; set; }
 
     [JsonPropertyName("data")]
-    public List<ShotDataRow> Data { get; set; }
+    public List<ShotDataRow>? Data { get; set; }
 
     public class ShotDataRow
     {
-        [JsonPropertyName("load")] public string Load { get; set; }
-        [JsonPropertyName("trackID")] public string TrackID { get; set; }
-        [JsonPropertyName("strVelFt")] public double StrVelFt { get; set; }
-        [JsonPropertyName("ppCp")] public string PpCp { get; set; }
-        [JsonPropertyName("notes")] public string Notes { get; set; }
-        [JsonPropertyName("position")] public string Position { get; set; }
+        [JsonPropertyName("load")]
+        public string? Load { get; set; }
+
+        [JsonPropertyName("trackId")]
+        public string? TrackId { get; set; }
+
+        [JsonPropertyName("strVelM")]
+        public double? StrVelM { get; set; }
+
+        [JsonPropertyName("strVelFt")]
+        public double? StrVelFt { get; set; }
+
+        [JsonPropertyName("ppCp")]
+        public string? PpCp { get; set; }
+
+        [JsonPropertyName("used")]
+        public bool? Used { get; set; }
+
+        [JsonPropertyName("notes")]
+        public string? Notes { get; set; }
+
+        [JsonPropertyName("position")]
+        public string? Position { get; set; }
     }
 }

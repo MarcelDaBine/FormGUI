@@ -18,7 +18,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <MergeResourceInclude Source="/Assets/ComboBoxStyle.axaml"/>
+                <MergeResourceInclude Source="/Assets/Styles/ComboBoxStyle.axaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

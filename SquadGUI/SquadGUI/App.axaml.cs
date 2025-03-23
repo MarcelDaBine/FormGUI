@@ -5,6 +5,7 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using SquadGUI.ViewModels;
 using SquadGUI.Views;
+using SquadGUI.Interfaces;
 
 namespace SquadGUI;
 
@@ -24,14 +25,14 @@ public partial class App : Application
             BindingPlugins.DataValidators.RemoveAt(0);
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
+                DataContext = new MainViewModel(null)
             };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
             singleViewPlatform.MainView = new LoginView
             {
-                DataContext = new MainViewModel()
+                DataContext = new MainViewModel(null)
             };
         }
 

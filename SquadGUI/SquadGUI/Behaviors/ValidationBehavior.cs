@@ -61,7 +61,7 @@ public class ValidationBehavior : AvaloniaObject
         {
             comboBox.PropertyChanged += (sender, args) =>
             {
-                if (args.Property.Name == nameof(ComboBox.IsDropDownOpen))
+                if (args.Property.Name == nameof(ComboBox.IsDropDownOpen) || args.Property.Name == nameof(ComboBox.SelectedItem))
                     ValidateControl(comboBox);
             };
         }

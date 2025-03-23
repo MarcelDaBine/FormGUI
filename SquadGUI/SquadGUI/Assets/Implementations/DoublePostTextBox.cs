@@ -10,15 +10,16 @@ namespace SquadGUI.Assets;
 /// <summary>
 /// A TextBox that only accepts numeric input for floating point numbers
 /// </summary>
-public class PostTextBox : TextBox
+public class DoublePostTextBox : TextBox
 {
     protected override Type StyleKeyOverride => typeof(TextBox);
     public enum PostUnit
     {
         None,
+        Grams,
+        Pounds,
         Celsius,
         Fahrenheit,
-        Percent,
     }
 
     /// <summary>
@@ -49,13 +50,13 @@ public class PostTextBox : TextBox
     private bool IsNumeric(string? text)
     {
         var numString = RemoveUnitFromText(Text) + text;
-
-        if (!int.TryParse(numString, out var num))
+        
+        if (!double.TryParse(numString, out var num))
         {
             return false;
         }
         
-        return Unit != PostUnit.Percent ? (num <= 300 && numString != "00") : (num <= 100 && numString != "00");
+        return (num <= 10000 && numString != "00");
     }
 
     /// <summary>
@@ -64,7 +65,7 @@ public class PostTextBox : TextBox
     /// </summary>
     private bool IsNumericKey(Key key)
     {
-        return (key >= Key.D0 && key <= Key.D9) || (key >= Key.NumPad0 && key <= Key.NumPad9) || key == Key.Decimal ||
+        return (key >= Key.D0 && key <= Key.D9) || (key >= Key.NumPad0 && key <= Key.NumPad9) || key == Key.Decimal || key == Key.OemPeriod ||
                key == Key.Back || key == Key.Enter;
     }
     
@@ -75,8 +76,9 @@ public class PostTextBox : TextBox
     {
         // We remove the unit if it is present so we validate the numeric part.
         if (Unit != PostUnit.None)
-            e.Text = e.Text?.Replace("g","").Replace("lb","");
+            e.Text = e.Text?.Replace(" g","").Replace(" lb","").Replace(" \u00b0C°","").Replace(" \u00b0F","");
 
+        Console.WriteLine("a");
         if (!IsNumeric(e.Text))
         {
             e.Handled = true;
@@ -115,9 +117,10 @@ public class PostTextBox : TextBox
     {
         return Unit switch
         {
-            PostUnit.Celsius => text + " °C",
-            PostUnit.Fahrenheit => text + " °F",
-            PostUnit.Percent => text + "%",
+            PostUnit.Grams => text + " g",
+            PostUnit.Pounds => text + " lb",
+            PostUnit.Celsius => text + " \u00b0C",
+            PostUnit.Fahrenheit => text + " \u00b0F",
             _ => text,
         };
     }
@@ -127,9 +130,9 @@ public class PostTextBox : TextBox
         if (string.IsNullOrWhiteSpace(text))
             return text;
         text = text.Trim();
-        if (text.EndsWith("°C") || text.EndsWith("°F"))
+        if (text.EndsWith("lb") || text.EndsWith("\u00b0C") || text.EndsWith("\u00b0F"))
             return text.Substring(0, text.Length - 2).Trim();
-        if (text.EndsWith("%"))
+        if (text.EndsWith('g'))
             return text.Substring(0, text.Length - 1).Trim();
         return text;
     }

@@ -1,6 +1,11 @@
 ﻿using System;
+using Avalonia;
 using Avalonia.Animation;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using ReactiveUI;
+using SquadGUI.Interfaces;
+using SquadGUI.Services;
 
 namespace SquadGUI.ViewModels;
 
@@ -8,6 +13,7 @@ namespace SquadGUI.ViewModels;
 public class MainViewModel: ViewModelBase
 {
     private ViewModelBase _currentViewModel;
+    private readonly IFileSaver _fileSaver;
 
     //CurrentViewModel holds the viewmodel that is displayed
     public ViewModelBase CurrentViewModel
@@ -16,14 +22,17 @@ public class MainViewModel: ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
     }
 
-    public MainViewModel()
+    public MainViewModel(Window window)
     {
-        //CurrentViewModel = new LoginViewModel(SwitchToDashboard);
-        CurrentViewModel = new DashboardViewModel();
+        _fileSaver = new JsonFileSaver(window);
+        
+        _currentViewModel = new DashboardViewModel(_fileSaver);
+        
+        //_currentViewModel = new LoginViewModel(SwitchToDashboard);
     }
 
     private void SwitchToDashboard()
     { 
-        CurrentViewModel = new DashboardViewModel();
+        CurrentViewModel = new DashboardViewModel(_fileSaver);
     }
 }

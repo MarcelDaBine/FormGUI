@@ -24,6 +24,8 @@ using SkiaSharp;
 using SquadGUI.Assets;
 using Avalonia.Media;
 using LiveChartsCore.Measure;
+using SquadGUI.Interfaces;
+using SquadGUI.Services;
 
 namespace SquadGUI.ViewModels;
 
@@ -35,15 +37,15 @@ public class DashboardViewModel : ViewModelBase
     private Dictionary<ComboBox, string> _selectedItems;
 
     private ObservableCollection<Border> _textBlocks;
+    private ObservableCollection<Border> _usedBlocks;
     private ObservableCollection<FloatNumTextBox> _numVelNumVelTextBoxes;
     private ObservableCollection<ComboBox> _pcpComboBoxes;
-    private ObservableCollection<Border> _usedBlocks;
     private ObservableCollection<FloatNumTextBox> _loadNumTextBoxes;
     private ObservableCollection<ComboBox> _posComboBoxes;
-    private ObservableCollection<TextBox> _msTextBoxes;
-    private ObservableCollection<Button> _deleteButtons;
     private ObservableCollection<TextBox> _trackIdTextBoxes;
     private ObservableCollection<Button> _notesTextBoxes;
+    private ObservableCollection<TextBox> _msTextBoxes;
+    private ObservableCollection<Button> _deleteButtons;
     private ObservableCollection<TextBox> _sampleInfoBoxes;
     private ObservableCollection<Border> _sampleInfoBoxesIndexes;
     private ObservableCollection<Button> _sampleDeleteButtons;
@@ -111,13 +113,20 @@ public class DashboardViewModel : ViewModelBase
 
     private DateTimeOffset? _formDate = DateTimeOffset.Now;
     private TimeSpan? _formTime = TimeSpan.Parse(DateTime.Now.ToString("HH:mm:ss"));
+    
+    private IFileSaver _fileSaver;
     public ReactiveCommand<Grid,Unit> ValidateAllCommand { get; }
     public ReactiveCommand<string, Unit> DeserializeCommand { get;}
+    
+    public ReactiveCommand<Unit,Unit> SaveCommand { get; }
+    
 
 
     //constructor
-    public DashboardViewModel()
+    public DashboardViewModel(IFileSaver fileSaver)
     {
+        _fileSaver = fileSaver;
+        
         IsPaneOpenAttribute = false;
 
         var yAxis = new Axis()
@@ -129,9 +138,9 @@ public class DashboardViewModel : ViewModelBase
 
         _lineSeries = new LineSeries<double>
         {
-            Stroke = new SolidColorPaint(SKColors.MediumPurple) { StrokeThickness = 6 },
+            Stroke = new SolidColorPaint(SKColors.SlateGray, 6),
             GeometrySize = 10,
-            GeometryStroke = new SolidColorPaint(SKColors.MediumPurple),
+            GeometryStroke = new SolidColorPaint(SKColors.SlateGray),
             GeometryFill = new SolidColorPaint(SKColors.WhiteSmoke),
             LineSmoothness = 0,
             Name = "Shot",
@@ -140,23 +149,24 @@ public class DashboardViewModel : ViewModelBase
         };
         _v50Series = new LineSeries<double>()
         {
-            Stroke = new SolidColorPaint(SKColors.Purple) { StrokeThickness = 6 },
+            Stroke = new SolidColorPaint(SKColor.Parse("#3d9ce1"), 6),
             GeometrySize = 0,
-            GeometryStroke = new SolidColorPaint(SKColors.Purple) { StrokeThickness = 0 },
+            GeometryStroke = new SolidColorPaint(SKColor.Parse("#3d9ce1"), 0),
             Fill = null,
             Name = "V50"
         };
         _v50MinSeries = new LineSeries<double>()
         {
-            Stroke = new SolidColorPaint(SKColors.Indigo) { StrokeThickness = 6 },
+            Stroke = new SolidColorPaint(SKColor.Parse("#3db9e6"), 6),
             GeometrySize = 0,
-            GeometryStroke = new SolidColorPaint(SKColors.Indigo) { StrokeThickness = 0 },
+            GeometryStroke = new SolidColorPaint(SKColor.Parse("#3d9ce1"), 0),
             Fill = null,
             Name = "V50Min"
         };
 
         ValidateAllCommand = ReactiveCommand.Create<Grid>(ValidateForm);
         DeserializeCommand = ReactiveCommand.Create<string>(Deserialize);
+        SaveCommand = ReactiveCommand.Create(SaveForm);
 
         Series = new ISeries[] { _lineSeries, _v50Series, _v50MinSeries };
 
@@ -169,7 +179,7 @@ public class DashboardViewModel : ViewModelBase
         SampleInfoBoxes = new ObservableCollection<TextBox>();
         SampleInfoBoxesIndexes = new ObservableCollection<Border>();
         SampleDeleteButtons = new ObservableCollection<Button>();
-        AddSampleInfoBox();
+        AddSampleInfoBox("");
         AddSampleInfoIndexBlock();
         AddSampleDeleteButton();
 
@@ -177,7 +187,7 @@ public class DashboardViewModel : ViewModelBase
         StandardsTextBoxes = new ObservableCollection<TextBox>();
         StandardsTextBoxesIndexes = new ObservableCollection<Border>();
         AddStandardsDeleteButton();
-        AddStandardsTextBox();
+        AddStandardsTextBox("");
         AddStandardsTextIndexBlock();
 
         ChartInputFieldSetup();
@@ -203,16 +213,16 @@ public class DashboardViewModel : ViewModelBase
 
         for (var i = 0; i < ChartItemsCount + 1; ++i) // +1 bc of the empty box
         {
-            AddVelocityNumTextBox();
-            AddPcpComboBox();
+            AddVelocityNumTextBox("");
+            AddPcpComboBox("");
             AddTextBlock();
-            AddLoadNumTextBox();
+            AddLoadNumTextBox("");
             AddUsedBlock();
-            AddPosComboBox();
+            AddPosComboBox("");
             AddMsTextBox();
             AddDeleteButton();
-            AddTrackIdBox();
-            AddNotesBoxes();
+            AddTrackIdBox("");
+            AddNotesBoxes("");
         }
     }
 
@@ -338,8 +348,9 @@ public class DashboardViewModel : ViewModelBase
     // <summary>
     // Adds Buttons and does some checks to focus the next input field in the same column.
     // </summary>
-    private void AddButtons(object? sender, EventArgs e)
+    private void AddButtonsSender(object? sender, EventArgs e)
     {
+        
         switch (sender)
         {
             case FloatNumTextBox floatNumTextBox:
@@ -371,37 +382,48 @@ public class DashboardViewModel : ViewModelBase
 
         }
 
-        AddPcpComboBox();
-        AddVelocityNumTextBox();
+        AddPcpComboBox("");
+        AddVelocityNumTextBox("");
         AddTextBlock();
-        AddLoadNumTextBox();
+        AddLoadNumTextBox("");
         AddUsedBlock();
-        AddPosComboBox();
+        AddPosComboBox("");
         AddMsTextBox();
         AddDeleteButton();
-        AddTrackIdBox();
-        AddNotesBoxes();
+        AddTrackIdBox("");
+        AddNotesBoxes("");
     }
-
+    
+    private void AddButtonsStandardsInfo(object? sender, EventArgs e)
+    {
+        if (sender as TextBox != StandardsTextBoxes.Last())
+        {
+            return;
+        }
+        AddStandardsTextBox("");
+        AddStandardsTextIndexBlock();
+        AddStandardsDeleteButton();
+    }
+    
     private void AddButtonsSampleInfo(object? sender, EventArgs e)
     {
         if (sender as TextBox != SampleInfoBoxes.Last())
         {
             return;
         }
-        AddSampleInfoBox();
+        AddSampleInfoBox("");
         AddSampleInfoIndexBlock();
         AddSampleDeleteButton();
     }
 
-    private void AddVelocityNumTextBox()
+    private void AddVelocityNumTextBox(string value)
     {
         var numTextBox = new FloatNumTextBox()
         {
             Opacity = 0.3
         };
-        Behaviors.ValidationBehavior.SetEnableValidation(numTextBox, true);
-        numTextBox.KeyDown += AddButtons;
+        Behaviors.ValidationBehavior.SetEnableValidation(numTextBox, false);
+        numTextBox.KeyDown += AddButtonsSender;
         numTextBox.PropertyChanged += ((o, args) =>
         {
 
@@ -425,12 +447,13 @@ public class DashboardViewModel : ViewModelBase
         if (NumVelTextBoxes.Count > 0)
         {
             NumVelTextBoxes.Last().Opacity = 1;
+            Behaviors.ValidationBehavior.SetEnableValidation(NumVelTextBoxes.Last(), true);
         }
 
         NumVelTextBoxes.Add(numTextBox);
     }
 
-    private void AddPcpComboBox()
+    private void AddPcpComboBox(string value)
     {
         var box = new ComboBox()
         {
@@ -438,6 +461,7 @@ public class DashboardViewModel : ViewModelBase
             Height = 30,
             Margin = Thickness.Parse("10"),
             Items = { "PP", "CP", "N/A" },
+            SelectedItem = value,
             Opacity = 0.3
         };
 
@@ -446,17 +470,17 @@ public class DashboardViewModel : ViewModelBase
             if (sender is ComboBox cb)
             {
                 cb.IsDropDownOpen = true;
-                AddButtons(sender, e);
+                AddButtonsSender(sender, e);
             }
         };
         box.SelectionChanged += (sender, e) => { UpdateChart(); };
+        Behaviors.ValidationBehavior.SetEnableValidation(box, false);
+        
         if (PcpComboBoxes.Count > 0)
         {
             PcpComboBoxes.Last().Opacity = 1;
+            Behaviors.ValidationBehavior.SetEnableValidation(PcpComboBoxes.Last(), true);
         }
-
-        Behaviors.ValidationBehavior.SetEnableValidation(box, true);
-
         PcpComboBoxes.Add(box);
     }
 
@@ -481,7 +505,7 @@ public class DashboardViewModel : ViewModelBase
         TextBlocks.Add(border);
     }
 
-    private void AddPosComboBox()
+    private void AddPosComboBox(string value)
     {
         var posComboBox = new ComboBox()
         {
@@ -489,6 +513,7 @@ public class DashboardViewModel : ViewModelBase
             Height = 30,
             Margin = Thickness.Parse("10"),
             Items = { "Crown", "Back", "Left", "Right", "Front" },
+            SelectedItem = value,
             Opacity = 0.3
         };
         posComboBox.PointerPressed += (sender, e) =>
@@ -496,37 +521,41 @@ public class DashboardViewModel : ViewModelBase
             if (sender is ComboBox cb)
             {
                 cb.IsDropDownOpen = true;
-                AddButtons(sender, e);
+                AddButtonsSender(sender, e);
             }
         };
+        Behaviors.ValidationBehavior.SetEnableValidation(posComboBox, false);
         if (PosComboBoxes.Count > 0)
         {
             PosComboBoxes.Last().Opacity = 1;
+            Behaviors.ValidationBehavior.SetEnableValidation(PosComboBoxes.Last(), true);
         }
-        Behaviors.ValidationBehavior.SetEnableValidation(posComboBox, true);
 
         PosComboBoxes.Add(posComboBox);
     }
 
-    private void AddTrackIdBox()
+    private void AddTrackIdBox(string value)
     {
         var textBox = new TextBox()
         {
-            Opacity = 0.3
+            Opacity = 0.3,
+            Text = value
         };
+        Behaviors.ValidationBehavior.SetEnableValidation(textBox, false);
         if (TrackIdTextBoxes.Count > 0)
         {
             TrackIdTextBoxes.Last().Opacity = 1;
+            Behaviors.ValidationBehavior.SetEnableValidation(TrackIdTextBoxes.Last(), true);
         }
-        Behaviors.ValidationBehavior.SetEnableValidation(textBox, true);
         TrackIdTextBoxes.Add(textBox);
     }
 
-    private void AddNotesBoxes()
+    private void AddNotesBoxes(string value)
     {
         var button = new Button()
         {
             Opacity = 0.3,
+            IsEnabled = false
         };
         if (NotesTextBoxes.Count > 0)
         {
@@ -547,6 +576,7 @@ public class DashboardViewModel : ViewModelBase
                         Height = 750,
                         TextWrapping = TextWrapping.Wrap,
                         Watermark = "Input...",
+                        Text = value
                     },
                 }
             },
@@ -565,28 +595,34 @@ public class DashboardViewModel : ViewModelBase
                 Flyout.ShowAttachedFlyout(sender);
             }
         };
+        
         flyout.Closed += (o, e) =>
         {
             button.Content = !string.IsNullOrWhiteSpace(((TextBox)((Grid)flyout.Content).Children[0]).Text)
                 ? "Has notes"
                 : "";
         };
-
+        if (NotesTextBoxes.Count > 0)
+        {
+            NotesTextBoxes.Last().IsEnabled = true;
+        }
         NotesTextBoxes.Add(button);
     }
 
-    private void AddLoadNumTextBox()
+    private void AddLoadNumTextBox(string value)
     {
         var textBox = new FloatNumTextBox()
         {
-            Opacity = 0.3
+            Opacity = 0.3,
+            Text = value
         };
-        textBox.KeyDown += AddButtons;
+        textBox.KeyDown += AddButtonsSender;
+        Behaviors.ValidationBehavior.SetEnableValidation(textBox, false);
         if (LoadNumTextBoxes.Count > 0)
         {
             LoadNumTextBoxes.Last().Opacity = 1;
+            Behaviors.ValidationBehavior.SetEnableValidation(LoadNumTextBoxes.Last(), true);
         }
-        Behaviors.ValidationBehavior.SetEnableValidation(textBox, true);
         LoadNumTextBoxes.Add(textBox);
     }
 
@@ -632,11 +668,12 @@ public class DashboardViewModel : ViewModelBase
         SampleInfoBoxesIndexes.Add(border);
     }
     
-    private void AddSampleInfoBox()
+    private void AddSampleInfoBox(string value)
     {
         var textBox = new TextBox()
         {
             Opacity = 0.3,
+            Text = value
         };
         if (SampleInfoBoxes.Count > 0)
         {
@@ -809,11 +846,12 @@ public class DashboardViewModel : ViewModelBase
 
         StandardsDeleteButtons.Add(button);
     }
-    private void AddStandardsTextBox()
+    private void AddStandardsTextBox(string value)
     {
         var textBox = new TextBox()
         {
             Opacity = 0.3,
+            Text = value
         };
         if (StandardsTextBoxes.Count > 0)
         {
@@ -842,17 +880,6 @@ public class DashboardViewModel : ViewModelBase
         }
 
         StandardsTextBoxesIndexes.Add(border);
-    }
-
-    private void AddButtonsStandardsInfo(object? sender, EventArgs e)
-    {
-        if (sender as TextBox != StandardsTextBoxes.Last())
-        {
-            return;
-        }
-        AddStandardsTextBox();
-        AddStandardsTextIndexBlock();
-        AddStandardsDeleteButton();
     }
 
 
@@ -993,13 +1020,13 @@ public class DashboardViewModel : ViewModelBase
     {
         if (fahrenheit.EndsWith("\u00b0F"))
         {
-            return int.TryParse(fahrenheit.AsSpan(0, fahrenheit.Length - 3), out var value)
+            return double.TryParse(fahrenheit.AsSpan(0, fahrenheit.Length - 3), out var value)
                 ? ((value - 32) * 5 / 9).ToString("N0")
                 : "";
         }
         else
         {
-            return int.TryParse(fahrenheit, out var value)
+            return double.TryParse(fahrenheit, out var value)
                 ? ((value - 32) * 5 / 9).ToString("N0")
                 : "";
         }
@@ -1009,13 +1036,13 @@ public class DashboardViewModel : ViewModelBase
     {
         if (celsius.EndsWith("\u00b0C"))
         {
-            return int.TryParse(celsius.AsSpan(0, celsius.Length - 3), out var value)
+            return double.TryParse(celsius.AsSpan(0, celsius.Length - 3), out var value)
                 ? (value * 9 / 5 + 32).ToString("N0")
                 : "";
         }
         else
         {
-            return int.TryParse(celsius, out var value)
+            return double.TryParse(celsius, out var value)
                 ? (value * 9 / 5 + 32).ToString("N0")
                 : "";
         }
@@ -1046,29 +1073,55 @@ public class DashboardViewModel : ViewModelBase
             return;
         }
 
-        if (!Behaviors.ValidationBehavior.ValidateAll(mainGrid))
+        if (!Behaviors.ValidationBehavior.ValidateAll(mainGrid) || String.IsNullOrEmpty(MeanValueFt))
         {
             return;
         }
-        
+
         var shots = new List<object>();
         
-        for (var i = 0; i < _numVelNumVelTextBoxes.Count; i++)
+        for (var i = 0; i < NumVelTextBoxes.Count - 1; i++)
         {
-            var noteText = _notesTextBoxes[i].Content?.ToString();
+            var noteText = NotesTextBoxes[i].Content?.ToString();
             var row = new
             {
-                load = double.Parse(_loadNumTextBoxes[i].Text),
-                trackID = _trackIdTextBoxes[i].Text,
-                strVelFt = double.Parse(_numVelNumVelTextBoxes[i].Text),
-                strVelMs = double.Parse(_msTextBoxes[i].Text),
-                ppCp = _pcpComboBoxes[i].SelectedItem?.ToString(),
-                used = _usedBlocks[i].Classes.Contains("Y"),
-                notes = string.IsNullOrEmpty(noteText) ? null : noteText,
-                position = _posComboBoxes[i].SelectedItem?.ToString()
+                load = double.Parse(LoadNumTextBoxes[i].Text),
+                trackID = TrackIdTextBoxes[i].Text,
+                strVelFt = double.Parse(NumVelTextBoxes[i].Text),
+                strVelMs = double.Parse(MsTextBoxes[i].Text),
+                ppCp = PcpComboBoxes[i].SelectedItem?.ToString(),
+                used = ((TextBlock)UsedBlocks[i].Child).Text == "Y" ? true : false,
+                notes = string.IsNullOrEmpty(noteText) ? "" : noteText,
+                position = PosComboBoxes[i].SelectedItem?.ToString()
             };
 
             shots.Add(row);
+        }
+        
+        var info = new List<object>();
+        if (_sampleInfoBoxes.Count == 1)
+        {
+            info = null;
+        }
+        else
+        {
+            foreach (var box in _sampleInfoBoxes) 
+            {
+                info.Add(box.Text);
+            }
+        }
+        
+        List<object> proc = new List<object>();
+        if (_standardsTextBoxes.Count == 1)
+        {
+            proc = null;
+        }
+        else
+        {
+            foreach (var box in _standardsTextBoxes) 
+            {
+                proc.Add(box.Text);
+            }
         }
 
         var data = new
@@ -1078,9 +1131,9 @@ public class DashboardViewModel : ViewModelBase
             temperatureC = double.Parse(_celsiusText.Substring(0, _celsiusText.Length - 2).Trim()),
             temperatureF = double.Parse(_fahrenheitText.Substring(0, _fahrenheitText.Length - 2).Trim()),
             humidity = double.Parse(_humidityText.Substring(0, _humidityText.Length - 1).Trim()),
-            lotNo = LotNo, //fix empty shit
+            lotNo = LotNo, 
             client = Client,
-            reportNumber = _reportNumberText,
+            reportNumber = SampleReportNumber1 + " " + SampleReportNumberText + " " + SelectedProjectile + " " + SampleReportNumber2 + " " + SelectedCondition,
             sampleNumber = _sampleNumberText,
             description = Description,
             model = _selectedModel,
@@ -1090,7 +1143,7 @@ public class DashboardViewModel : ViewModelBase
             pounds = double.Parse(_massPounds.Substring(0, _massPounds.Length - 2).Trim()),
             condition = _selectedCondition,
             optionalInfoText = OptionalInfoText,
-            inputRowsInfo = "list",
+            inputRowsInfo = info,
             projectile = _selectedProjectile,
             powder = _selectedPowder,
             barrel = _selectedBarrel,
@@ -1099,7 +1152,7 @@ public class DashboardViewModel : ViewModelBase
             witnessPanel = _witnessPanel,
             obliquity = _obliquity,
             backingMaterial = _backingMaterial,
-            inputFieldsProc = "list",
+            inputFieldsProc = proc,
 
             // Chart fields
             v50ValueM = double.Parse(_meanValueMs),
@@ -1128,15 +1181,98 @@ public class DashboardViewModel : ViewModelBase
         var options = new JsonSerializerOptions
         {
             WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
         string json = JsonSerializer.Serialize(data, options);
 
         // You can write it to a file or just debug output
-        File.WriteAllText("formData.json", json); // saves next to your .exe
+        
+        _fileSaver.SubmitJsonAsync(json);
+        
         Console.WriteLine(json); // or Debug.WriteLine(json) if in Avalonia GUI
     }
+
+    private void SaveForm()
+    {
+
+        var shots = new List<object>();
+
+        for (var i = 0; i < NumVelTextBoxes.Count; i++)
+        {
+            var noteText = NotesTextBoxes[i].Content?.ToString();
+
+            shots.Add(new
+            {
+                load = TryParseDouble(LoadNumTextBoxes[i]?.Text),
+                trackID = TryParseString(TrackIdTextBoxes[i]?.Text),
+                strVelFt = TryParseDouble(NumVelTextBoxes[i]?.Text),
+                ppCp = TryParseString(PcpComboBoxes[i]?.SelectedItem?.ToString()),
+                notes = TryParseString(noteText),
+                position = TryParseString(PosComboBoxes[i]?.SelectedItem?.ToString())
+            });
+        }
+
+        var info = _sampleInfoBoxes.Count > 1 ? _sampleInfoBoxes.Select(b => b.Text).ToList() : null;
+        var proc = _standardsTextBoxes.Count > 1 ? _standardsTextBoxes.Select(b => b.Text).ToList() : null;
+
+        var data = new
+        {
+            date = _formDate?.ToString("yyyy-MM-dd"),
+            time = _formTime?.ToString(@"hh\:mm"),
+            temperatureC = TryParseDouble(_celsiusText),
+            temperatureF = TryParseDouble(_fahrenheitText),
+            humidity = TryParseDouble(_humidityText),
+            lotNo = TryParseString(LotNo),
+            client = TryParseString(Client),
+            reportNumber = TryParseString(SampleReportNumber1 + " " + SampleReportNumberText + " " +
+                                          SelectedProjectile + " " + SampleReportNumber2 + " " + SelectedCondition),
+            sampleNumber = TryParseString(_sampleNumberText),
+            description = TryParseString(Description),
+            model = TryParseString(_selectedModel),
+            size = TryParseString(_selectedSize),
+            mass = TryParseString(_selectedMass),
+            grams = TryParseDouble(_massGrams),
+            pounds = TryParseDouble(_massPounds),
+            condition = TryParseString(_selectedCondition),
+            optionalInfoText = TryParseString(OptionalInfoText),
+            inputRowsInfo = info,
+            projectile = TryParseString(_selectedProjectile),
+            powder = TryParseString(_selectedPowder),
+            barrel = TryParseString(_selectedBarrel),
+            sensor = TryParseString(_selectedRangeConfig),
+            shotSpacing = TryParseString(_shotSpacing),
+            witnessPanel = TryParseString(_witnessPanel),
+            obliquity = TryParseString(_obliquity),
+            backingMaterial = TryParseString(_backingMaterial),
+            inputRowsProc = proc,
+            v50ValueM = TryParseDouble(_meanValueMs),
+            v50ValueFt = TryParseDouble(_meanValueFt),
+            highPartialM = TryParseDouble(_highPartialMs),
+            highPartialFt = TryParseDouble(_highPartialFt),
+            lowCompleteM = TryParseDouble(_lowCompleteMs),
+            lowCompleteFt = TryParseDouble(_lowCompleteFt),
+            mixedResultsM = TryParseString(_mixedResultsMs),
+            mixedResultsFt = TryParseString(_mixedResultsFt),
+            gapM = TryParseString(_gapMs),
+            gapFt = TryParseString(_gapFt),
+            rangeResultsM = TryParseDouble(_rangeResultsMs),
+            rangeResultsFt = TryParseDouble(_rangeResultsFt),
+            v50MinFt = TryParseDouble(_v50MinFt),
+            v50MinM = TryParseDouble(_v50MinMs),
+            deltaVM = TryParseDouble(_deltaVMs),
+            deltaVFt = TryParseDouble(_deltaVFt),
+            percentageM = TryParseDouble(_percentageMs),
+            percentageFt = TryParseDouble(_percentageFt),
+            expandedUncertainty = TryParseString(_expandedUncertainty),
+            decisionRule = TryParseString(_decisionRule),
+            data = shots
+        };
+
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string json = JsonSerializer.Serialize(data, options);
+        _fileSaver.SaveJsonAsync(json);
+    }
+
 
     private void Deserialize(string filePath)
     {
@@ -1149,55 +1285,117 @@ public class DashboardViewModel : ViewModelBase
 
     private void LoadFromModel(ReportModel report)
     {
-        FormDate = DateTimeOffset.TryParse(report.FormDate, out var dt) ? dt : DateTimeOffset.Now;
-        FormTime = TimeSpan.TryParse(report.FormTime, out var ts) ? ts : TimeSpan.Parse(DateTime.Now.ToString("HH:mm"));
-        SelectedModel = report.SelectedModel;
-        SelectedSize = report.SelectedSize;
-        SelectedMass = report.SelectedMass;
-        MassGrams = report.MassGrams.ToString();
-        MassPounds = report.MassPounds.ToString();
-        SelectedCondition = report.SelectedCondition;
-        OptionalInfoText = report.OptionalInfoText;
-        SelectedProjectile = report.SelectedProjectile;
-        SelectedModel = report.SelectedModel;
-        SelectedPowder = report.SelectedPowder;
-        SelectedBarrel = report.SelectedBarrel;
-        SelectedRangeConfig = report.SelectedRangeConfig;
-        //RangeConfigText = report.RangeConfigText;
-        ShotSpacing = report.ShotSpacing;
-        WitnessPanel = report.WitnessPanel;
-        Obliquity = report.Obliquity;
-        BackingMaterial = report.BackingMaterial;
-        MeanValueMs = report.MeanValueMs.ToString();
-        MeanValueFt = report.MeanValueFt.ToString();
-        HighPartialMs = report.HighPartialMs.ToString();
-        HighPartialFt = report.HighPartialFt.ToString();
-        LowCompleteMs = report.LowCompleteMs.ToString();
-        LowCompleteFt = report.LowCompleteFt.ToString();
-        MixedResultsMs = report.MixedResultsMs;
-        MixedResultsFt = report.MixedResultsFt;
-        GapMs = report.GapMs;
-        GapFt = report.GapFt;
-        RangeResultsMs = report.RangeResultsMs.ToString();
-        RangeResultsFt = report.RangeResultsFt.ToString();
-        V50MinFt = report.V50MinFt.ToString();
-        V50MinMs = report.V50MinMs.ToString();
-        DeltaVMs = report.DeltaVMs.ToString();
-        DeltaVFt = report.DeltaVFt.ToString();
-        PercentageFt = report.PercentageFt.ToString();
-        PercentageMs = report.PercentageMs.ToString();
-        ExpandedUncertainty = report.ExpandedUncertainty;
-        DecisionRule = report.DecisionRule;
-        LotNo = report.LotNo.ToString();
-        Client = report.Client;
-        Shooter = report.Shooter;
-        SampleNumberText = report.SampleNumberText;
-        Description = report.Description;
-        CelsiusText = report.CelsiusText.ToString();
-        FahrenheitText = report.FahrenheitText.ToString();
-        HumidityText = report.HumidityText.ToString();
-        Recorder = report.Recorder;
+        FormDate = DateTimeOffset.TryParse(report.Date, out var dt) ? dt : DateTimeOffset.Now;
+        FormTime = TimeSpan.TryParse(report.Time, out var ts) ? ts : TimeSpan.Parse(DateTime.Now.ToString("HH:mm"));
+
+        Shooter = TryParseFromString(report.Shooter);
+        Recorder = TryParseFromString(report.Recorder);
+        CelsiusText = report.TemperatureC != null ? report.TemperatureC + " °C" : "";
+        HumidityText = report.Humidity != null ? report.Humidity + "%" : "";
+
+        LotNo = TryParseFromDouble(report.LotNo);
+        Client = TryParseFromString(report.Client);
+        SampleNumberText = TryParseFromString(report.SampleNumber);
+        Description = TryParseFromString(report.Description);
+
+        SelectedModel = TryParseFromString(report.Model);
+        SelectedSize = TryParseFromString(report.Size);
+        SelectedMass = TryParseFromString(report.Mass);
+        MassGrams = report.Grams != null ? report.Grams + " g" : "";
+        SelectedCondition = TryParseFromString(report.Condition);
+        OptionalInfoText = TryParseFromString(report.OptionalInfoText);
+
+        SelectedProjectile = TryParseFromString(report.Projectile);
+        SelectedPowder = TryParseFromString(report.Powder);
+        SelectedBarrel = TryParseFromString(report.Barrel);
+        SelectedRangeConfig = TryParseFromString(report.Sensor);
+        ShotSpacing = TryParseFromString(report.ShotSpacing);
+        WitnessPanel = TryParseFromString(report.WitnessPanel);
+        Obliquity = TryParseFromString(report.Obliquity);
+        BackingMaterial = TryParseFromString(report.BackingMaterial);
+        
+        V50MinMs = TryParseFromDouble(report.V50MinM);
+        V50MinFt = TryParseFromDouble(report.V50MinFt);
+        ExpandedUncertainty = TryParseFromDouble(report.ExpandedUncertainty);
+        DecisionRule = TryParseFromString(report.DecisionRule);
+
+        // Rows
+        if (report.Data != null)
+        {
+            for (var i = 0; i < report.Data.Count; i++)
+            {
+                var row = report.Data[i];
+                if (NumVelTextBoxes.Count > i)
+                {
+                    LoadNumTextBoxes[i].Text = TryParseFromString(row.Load);
+                    TrackIdTextBoxes[i].Text = TryParseFromString(row.TrackId);
+                    NumVelTextBoxes[i].Text = TryParseFromDouble(row.StrVelFt);
+                    PcpComboBoxes[i].SelectedItem = TryParseFromString(row.PpCp);
+                    PosComboBoxes[i].SelectedItem = TryParseFromString(row.Position);
+                    NotesTextBoxes[i].Content = TryParseFromString(row.Notes);
+                }
+                else
+                {
+                    AddPcpComboBox(TryParseFromString(row.PpCp));
+                    AddVelocityNumTextBox(TryParseFromDouble(row.StrVelFt));
+                    AddTextBlock();
+                    AddLoadNumTextBox(TryParseFromString(row.Load));
+                    AddUsedBlock();
+                    AddPosComboBox(TryParseFromString(row.Position));
+                    AddMsTextBox();
+                    AddDeleteButton();
+                    AddTrackIdBox(TryParseFromString(row.TrackId));
+                    AddNotesBoxes(TryParseFromString(row.Notes));
+                }
+            }
+        }
+
+
+        // Lists
+        SampleInfoBoxes.Clear();
+        if (report.InputRowsInfo != null)
+        {
+            foreach (var item in report.InputRowsInfo)
+            {
+                AddSampleInfoBox(item);
+                AddSampleInfoIndexBlock();
+                AddSampleDeleteButton();
+            }
+        }
+
+        StandardsTextBoxes.Clear();
+        if (report.InputRowsProc != null)
+        {
+            foreach (var item in report.InputRowsProc)
+            {
+                AddStandardsTextBox(item);
+                AddStandardsTextIndexBlock();
+                AddStandardsDeleteButton();
+            }
+        }
     }
+
+    private static string TryParseFromString(string? input)
+    {
+        return string.IsNullOrWhiteSpace(input) ? "" : input;
+    }
+
+    private static string TryParseFromDouble(double? input)
+    {
+        return input.HasValue ? input.Value.ToString("0.##") : "";
+    }
+
+    
+    private static double? TryParseDouble(string? input)
+    {
+        return double.TryParse(input, out var result) ? result : null;
+    }
+
+    private static string? TryParseString(string? input)
+    {
+        return string.IsNullOrWhiteSpace(input) ? null : input;
+    }
+
 
 
     //Button Commands
@@ -1809,5 +2007,9 @@ public class DashboardViewModel : ViewModelBase
     }
 
     public string SampleReportNumberText { get => _sampleNumberText.ToUpper().Trim(); }
+
+    public static string SampleReportNumber1 { get => "GLV INC"; }
+
+    public static string SampleReportNumber2 { get => "V50"; }
 }
     

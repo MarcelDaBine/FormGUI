@@ -10,14 +10,13 @@ namespace SquadGUI.Assets;
 /// <summary>
 /// A TextBox that only accepts numeric input for floating point numbers
 /// </summary>
-public class DoublePostTextBox : TextBox
+public class PostTextBox : TextBox
 {
     protected override Type StyleKeyOverride => typeof(TextBox);
     public enum PostUnit
     {
         None,
-        Grams,
-        Pounds
+        Percent,
     }
 
     /// <summary>
@@ -49,12 +48,12 @@ public class DoublePostTextBox : TextBox
     {
         var numString = RemoveUnitFromText(Text) + text;
 
-        if (!double.TryParse(numString, out var num))
+        if (!int.TryParse(numString, out var num))
         {
             return false;
         }
         
-        return (num <= 10000 && numString != "00");
+        return (num <= 100 && numString != "00");
     }
 
     /// <summary>
@@ -63,7 +62,7 @@ public class DoublePostTextBox : TextBox
     /// </summary>
     private bool IsNumericKey(Key key)
     {
-        return (key >= Key.D0 && key <= Key.D9) || (key >= Key.NumPad0 && key <= Key.NumPad9) || key == Key.Decimal || key == Key.OemPeriod ||
+        return (key >= Key.D0 && key <= Key.D9) || (key >= Key.NumPad0 && key <= Key.NumPad9) || key == Key.Decimal ||
                key == Key.Back || key == Key.Enter;
     }
     
@@ -74,7 +73,7 @@ public class DoublePostTextBox : TextBox
     {
         // We remove the unit if it is present so we validate the numeric part.
         if (Unit != PostUnit.None)
-            e.Text = e.Text?.Replace(" g","").Replace(" lb","");
+            e.Text = e.Text?.Replace("%","");
 
         if (!IsNumeric(e.Text))
         {
@@ -114,8 +113,7 @@ public class DoublePostTextBox : TextBox
     {
         return Unit switch
         {
-            PostUnit.Grams => text + " g",
-            PostUnit.Pounds => text + " lb",
+            PostUnit.Percent => text + "%",
             _ => text,
         };
     }
@@ -125,10 +123,6 @@ public class DoublePostTextBox : TextBox
         if (string.IsNullOrWhiteSpace(text))
             return text;
         text = text.Trim();
-        if (text.EndsWith("lb"))
-            return text.Substring(0, text.Length - 2).Trim();
-        if (text.EndsWith('g'))
-            return text.Substring(0, text.Length - 1).Trim();
-        return text;
+        return text.EndsWith('%') ? text.AsSpan(0, text.Length - 1).Trim().ToString() : text;
     }
 }
