@@ -2016,4 +2016,3 @@ public class DashboardViewModel : ViewModelBase
 
     public static string SampleReportNumber2 { get => "V50"; }
 }
-    
