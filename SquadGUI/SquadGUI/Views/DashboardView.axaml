@@ -145,19 +145,14 @@
                 
                             <!-- Row 2 -->
                             <TextBlock Text="Report No:" Grid.Row="2" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,8,8"/>
-                            <views:SampleNumberInput Grid.Row="2" Grid.Column="5" Width="250" HorizontalAlignment="Left" Margin="-60,0,10,0"/>
-
-
-                            <!-- Row 3 -->
-                            <TextBlock Text="Report No:" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
-                            <views:SampleNumberInput Grid.Row="2" Grid.Column="6" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="8"/>
+                            <views:SampleNumberInput Grid.Row="2" Grid.Column="5" HorizontalAlignment="Left" Margin="-60,0,10,0"/>
 
                             <!-- Row 4 -->
                             <TextBlock Text="Temperature:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
                             <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8">
-                                <control:PostTextBox Text="{Binding CelsiusText}" Unit="Celsius" Margin="0,0,20,0"
+                                <control:DoublePostTextBox Text="{Binding CelsiusText}" Unit="Celsius" Margin="0,0,20,0"
                                                      behaviors:ValidationBehavior.EnableValidation="True"/>
-                                <control:PostTextBox Text="{Binding FahrenheitText}" Unit="Fahrenheit" Margin="20,0,10,0"
+                                <control:DoublePostTextBox Text="{Binding FahrenheitText}" Unit="Fahrenheit" Margin="20,0,10,0"
                                                      behaviors:ValidationBehavior.EnableValidation="True"/>
                             </StackPanel>
 
@@ -670,8 +665,6 @@
                             <Button Grid.Row="8" Grid.Column="0" 
                                     HorizontalContentAlignment="Center" 
                                     VerticalContentAlignment="Center" 
-                                    Foreground="Gray"
-                                    Background="SlateGray"
                                     Command="{Binding ValidateAllCommand}" 
                                     CommandParameter="{Binding #MainGridContent}">
                                 Submit
@@ -680,8 +673,6 @@
                             <Button Grid.Row="8" Grid.Column="1" 
                                     HorizontalContentAlignment="Center" 
                                     VerticalContentAlignment="Center" 
-                                    Foreground="Gray"
-                                    Background="SlateGray"
                                     Command="{Binding DeserializeCommand}">
                                 Open
                             </Button>

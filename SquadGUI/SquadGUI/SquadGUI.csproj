@@ -31,13 +31,7 @@
         <DependentUpon>CustomTitleBar.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
-      <Compile Update="Views\SampleNumberInput.axaml.cs">
-        <DependentUpon>SampleNumberInput.axaml</DependentUpon>
-      </Compile>
       <Compile Update="Views\MiniViews\SampleNumberInput.axaml.cs">
-        <DependentUpon>SampleNumberInput.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      <Compile Update="Views\SampleNumberInput.axaml.cs">
         <DependentUpon>SampleNumberInput.axaml</DependentUpon>
       </Compile>
     </ItemGroup>

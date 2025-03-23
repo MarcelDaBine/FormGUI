@@ -1365,6 +1365,7 @@ public class DashboardViewModel : ViewModelBase
                 AddSampleInfoIndexBlock();
                 AddSampleDeleteButton();
             }
+            AddSampleInfoBox("");
         }
 
         StandardsTextBoxes.Clear();
@@ -1376,6 +1377,7 @@ public class DashboardViewModel : ViewModelBase
                 AddStandardsTextIndexBlock();
                 AddStandardsDeleteButton();
             }
+            AddStandardsTextBox("");
         }
     }
 

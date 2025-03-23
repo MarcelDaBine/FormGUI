@@ -19,12 +19,12 @@
             <TextBlock Grid.Column="1" 
                        Text="{Binding SampleReportNumberText}"
                        HorizontalAlignment="Center"
-                       Margin="7"/>
+                       Margin="7" Width="150"/>
             <TextBlock Grid.Column="2" 
                        Text="{Binding SelectedProjectile}"
                        HorizontalAlignment="Center"
                        Margin="7"
-                       MaxWidth="300"/>
+                       MaxWidth="300" Width="150"/>
             <TextBlock Grid.Column="3"
                        HorizontalAlignment="Center"
                        Margin="7"
@@ -32,7 +32,7 @@
             <TextBlock Grid.Column="4" 
                        Text="{Binding SelectedCondition}"
                        HorizontalAlignment="Center"
-                       Margin="7"/>
+                       Margin="7" Width="150"/>
         </Grid>
     </Border>
 </UserControl>
