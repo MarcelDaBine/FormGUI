@@ -33,8 +33,6 @@
                    IsPaneOpen="{Binding IsPaneOpenAttribute}"
                    ZIndex="1"
                    DisplayMode="CompactOverlay"
-                   Foreground="DimGray"
-                   Background="LightGray"
                    PaneBackground="SlateGray">
             <!--Side menu implementation-->
             <SplitView.Pane>
