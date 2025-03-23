@@ -12,6 +12,8 @@
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="FontFamily" Value="Verdana"/>
         <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="MinWidth" Value="150"/>
+        <Setter Property="MaxWidth" Value="1300"/>
     </Style>
     
     <Style Selector="Border.TextBlockBorder">

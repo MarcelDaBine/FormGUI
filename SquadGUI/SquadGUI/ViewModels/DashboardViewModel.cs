@@ -1810,4 +1810,3 @@ public class DashboardViewModel : ViewModelBase
 
     public string SampleReportNumberText { get => _sampleNumberText.ToUpper().Trim(); }
 }
-    

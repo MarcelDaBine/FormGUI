@@ -16,7 +16,7 @@
         </Style>
     </UserControl.Styles>
     <Grid>
-        <Rectangle Height="40" 
+        <Rectangle Height="65" 
                            Grid.ColumnSpan="4"
                            Fill="LightSlateGray"
                            VerticalAlignment="Top"
