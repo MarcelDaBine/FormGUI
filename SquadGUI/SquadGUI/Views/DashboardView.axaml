@@ -19,10 +19,9 @@
     </Design.DataContext>
     
     <UserControl.Styles>
-        <StyleInclude Source="/Assets/TextBoxDashboardStyle.axaml"/>
-        <StyleInclude Source="/Assets/ButtonDashboardStyle.axaml"/>
-        <StyleInclude Source="/Assets/TextBlockStyle.axaml"/>
-        <StyleInclude Source="/Assets/flyOut.axaml"/>
+        <StyleInclude Source="/Assets/Styles/TextBoxDashboardStyle.axaml"/>
+        <StyleInclude Source="/Assets/Styles/FlyOut.axaml"/>
+        <StyleInclude Source="/Assets/Styles/TextBlockStyle.axaml"/>
     </UserControl.Styles>
     
     <Grid RowDefinitions="5*,95*" Background="White">
@@ -33,7 +32,10 @@
                    x:Name="MenuPane"
                    IsPaneOpen="{Binding IsPaneOpenAttribute}"
                    ZIndex="1"
-                   DisplayMode="CompactOverlay">
+                   DisplayMode="CompactOverlay"
+                   Foreground="DimGray"
+                   Background="LightGray"
+                   PaneBackground="SlateGray">
             <!--Side menu implementation-->
             <SplitView.Pane>
                 <Grid RowDefinitions="*,*">
@@ -45,13 +47,6 @@
                             HorizontalAlignment="Left">
                         <PathIcon Data="{DynamicResource LineHorizontal3Regular}"/>
                     </Button>
-                    <TextBox Grid.Row="1">
-                        <FlyoutBase.AttachedFlyout>
-                            <Flyout>
-                                <TextBlock Text="Red Rectangle Flyout." />
-                            </Flyout>
-                        </FlyoutBase.AttachedFlyout>
-                    </TextBox>
                 </Grid>
             </SplitView.Pane>
             
@@ -568,9 +563,6 @@
                             <Button Grid.Row="8" Grid.Column="0" 
                                     HorizontalContentAlignment="Center" 
                                     VerticalContentAlignment="Center" 
-                                    BorderBrush="SlateGray"
-                                    Foreground="DimGray"
-                                    Background="LightGray"
                                     Command="{Binding ValidateAllCommand}" 
                                     CommandParameter="{Binding #MainGridContent}">
                                 Submit
@@ -578,9 +570,6 @@
                             <Button Grid.Row="8" Grid.Column="1" 
                                     HorizontalContentAlignment="Center" 
                                     VerticalContentAlignment="Center" 
-                                    BorderBrush="SlateGray"
-                                    Foreground="DimGray"
-                                    Background="LightGray"
                                     Command="{Binding DeserializeCommand}">
                                 Open
                             </Button>
@@ -588,9 +577,6 @@
                             <Button Grid.Row="8" Grid.Column="2" 
                                     HorizontalContentAlignment="Center" 
                                     VerticalContentAlignment="Center" 
-                                    BorderBrush="SlateGray"
-                                    Foreground="DimGray"
-                                    Background="LightGray"
                                     Command="{Binding SaveCommand}">
                                 Save
                             </Button>

@@ -8,7 +8,6 @@
              x:DataType="vm:DashboardViewModel">
     <UserControl.Styles>
         <StyleInclude Source="/Assets/Styles/TextBoxDashboardStyle.axaml"/>
-        <StyleInclude Source="/Assets/Styles/TextBlockStyle.axaml"/>
     </UserControl.Styles>
     <Border
             BorderThickness="1"

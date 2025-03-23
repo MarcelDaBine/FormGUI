@@ -13,7 +13,7 @@ namespace SquadGUI.ViewModels;
 public class MainViewModel: ViewModelBase
 {
     private ViewModelBase _currentViewModel;
-    private readonly IFileSaver _fileSaver;
+    private readonly IFileIo _fileIo;
 
     //CurrentViewModel holds the viewmodel that is displayed
     public ViewModelBase CurrentViewModel
@@ -24,15 +24,15 @@ public class MainViewModel: ViewModelBase
 
     public MainViewModel(Window window)
     {
-        _fileSaver = new JsonFileSaver(window);
+        _fileIo = new JsonFileIo(window);
         
-        _currentViewModel = new DashboardViewModel(_fileSaver);
+        _currentViewModel = new DashboardViewModel(_fileIo);
         
         //_currentViewModel = new LoginViewModel(SwitchToDashboard);
     }
 
     private void SwitchToDashboard()
     { 
-        CurrentViewModel = new DashboardViewModel(_fileSaver);
+        CurrentViewModel = new DashboardViewModel(_fileIo);
     }
 }

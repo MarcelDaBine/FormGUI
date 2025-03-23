@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -61,71 +62,72 @@ public class DashboardViewModel : ViewModelBase
     private bool _isPaneOpenAttribute;
 
 
-    private string _meanValueMs;
-    private string _meanValueFt;
-    private string _debugChartMsg;
-    private string _highPartialMs;
-    private string _highPartialFt;
-    private string _lowCompleteMs;
-    private string _lowCompleteFt;
-    private string _mixedResultsFt;
-    private string _mixedResultsMs;
-    private string _gapMs;
-    private string _gapFt;
-    private string _rangeResultsFt;
-    private string _rangeResultsMs;
-    private string _v50MinFt;
-    private string _v50MinMs;
-    private string _deltaVMs;
-    private string _deltaVFt;
-    private string _percentageFt;
-    private string _percentageMs;
-    private string _expandedUncertainty;
-    private string _decisionRule;
-    private string _fahrenheitText;
-    private string _celsiusText;
-    private string _humidityText;
-    private string _selectedProjectile;
-    private string _selectedPowder;
-    private string _selectedBarrel;
-    private string _selectedModel;
-    private string _selectedSize;
-    private string _selectedMass;
-    private string _selectedCondition;
-    private string _massGrams;
-    private string _massPounds;
+    private string _meanValueMs = "";
+    private string _meanValueFt = "";
+    private string _debugChartMsg = "";
+    private string _highPartialMs = "";
+    private string _highPartialFt = "";
+    private string _lowCompleteMs = "";
+    private string _lowCompleteFt = "";
+    private string _mixedResultsFt = "";
+    private string _mixedResultsMs = "";
+    private string _gapMs = "";
+    private string _gapFt = "";
+    private string _rangeResultsFt = "";
+    private string _rangeResultsMs = "";
+    private string _v50MinFt = "";
+    private string _v50MinMs = "";
+    private string _deltaVMs = "";
+    private string _deltaVFt = "";
+    private string _percentageFt = "";
+    private string _percentageMs = "";
+    private string _expandedUncertainty = "";
+    private string _decisionRule = "";
+    private string _fahrenheitText = "";
+    private string _celsiusText = "";
+    private string _humidityText = "";
+    private string _selectedProjectile = "";
+    private string _selectedPowder = "";
+    private string _selectedBarrel = "";
+    private string _selectedModel = "";
+    private string _selectedSize = "";
+    private string _selectedMass = "";
+    private string _selectedCondition = "";
+    private string _massGrams = "";
+    private string _massPounds = "";
     private string _selectedRangeConfig = "Doppler radar";
-    private string _rangeConfigText;
-    private string _velText; 
-    private string _trackIdText;
-    private string _lotNo;
-    private string _sampleNumberText;
-    private string _reportNumberText;
-    private string _client;
-    private string _description;
-    private string _optionalInfoText;
-    private string _shotSpacing;
-    private string _witnessPanel;
-    private string _obliquity;
-    private string _backingMaterial;
-    private string _shooter;
-    private string _recorder;
+    private string _rangeConfigText = "";
+    private string _velText = "";
+    private string _trackIdText = "";
+    private string _lotNo = "";
+    private string _sampleNumberText = "";
+    private string _reportNumberText = "";
+    private string _client = "";
+    private string _description = "";
+    private string _optionalInfoText = "";
+    private string _shotSpacing = "";
+    private string _witnessPanel = "";
+    private string _obliquity = "";
+    private string _backingMaterial = "";
+    private string _shooter = "";
+    private string _recorder = "";
+
 
     private DateTimeOffset? _formDate = DateTimeOffset.Now;
     private TimeSpan? _formTime = TimeSpan.Parse(DateTime.Now.ToString("HH:mm:ss"));
     
-    private IFileSaver _fileSaver;
+    private IFileIo _fileIo;
     public ReactiveCommand<Grid,Unit> ValidateAllCommand { get; }
-    public ReactiveCommand<string, Unit> DeserializeCommand { get;}
+    public ReactiveCommand<Unit, Task> DeserializeCommand { get;}
     
     public ReactiveCommand<Unit,Unit> SaveCommand { get; }
     
 
 
     //constructor
-    public DashboardViewModel(IFileSaver fileSaver)
+    public DashboardViewModel(IFileIo fileIo)
     {
-        _fileSaver = fileSaver;
+        _fileIo = fileIo;
         
         IsPaneOpenAttribute = false;
 
@@ -165,10 +167,10 @@ public class DashboardViewModel : ViewModelBase
         };
 
         ValidateAllCommand = ReactiveCommand.Create<Grid>(ValidateForm);
-        DeserializeCommand = ReactiveCommand.Create<string>(Deserialize);
+        DeserializeCommand = ReactiveCommand.Create(Deserialize);
         SaveCommand = ReactiveCommand.Create(SaveForm);
 
-        Series = new ISeries[] { _lineSeries, _v50Series, _v50MinSeries };
+        Series = new ISeries[] { _v50MinSeries, _v50Series, _lineSeries };
 
         TogglePaneCommand = ReactiveCommand.Create(TogglePane);
 
@@ -1021,13 +1023,13 @@ public class DashboardViewModel : ViewModelBase
         if (fahrenheit.EndsWith("\u00b0F"))
         {
             return double.TryParse(fahrenheit.AsSpan(0, fahrenheit.Length - 3), out var value)
-                ? ((value - 32) * 5 / 9).ToString("N0")
+                ? ((value - 32) * 5 / 9).ToString("F1")
                 : "";
         }
         else
         {
             return double.TryParse(fahrenheit, out var value)
-                ? ((value - 32) * 5 / 9).ToString("N0")
+                ? ((value - 32) * 5 / 9).ToString("F1")
                 : "";
         }
     }
@@ -1037,13 +1039,13 @@ public class DashboardViewModel : ViewModelBase
         if (celsius.EndsWith("\u00b0C"))
         {
             return double.TryParse(celsius.AsSpan(0, celsius.Length - 3), out var value)
-                ? (value * 9 / 5 + 32).ToString("N0")
+                ? (value * 9 / 5 + 32).ToString("F1")
                 : "";
         }
         else
         {
             return double.TryParse(celsius, out var value)
-                ? (value * 9 / 5 + 32).ToString("N0")
+                ? (value * 9 / 5 + 32).ToString("F1")
                 : "";
         }
     }
@@ -1187,7 +1189,7 @@ public class DashboardViewModel : ViewModelBase
 
         // You can write it to a file or just debug output
         
-        _fileSaver.SubmitJsonAsync(json);
+        _fileIo.SubmitJsonAsync(json);
         
         Console.WriteLine(json); // or Debug.WriteLine(json) if in Avalonia GUI
     }
@@ -1270,17 +1272,19 @@ public class DashboardViewModel : ViewModelBase
 
         var options = new JsonSerializerOptions { WriteIndented = true };
         string json = JsonSerializer.Serialize(data, options);
-        _fileSaver.SaveJsonAsync(json);
+        _fileIo.SaveJsonAsync(json);
     }
 
 
-    private void Deserialize(string filePath)
+    private async Task Deserialize()
     {
         Console.WriteLine(Directory.GetCurrentDirectory());
-        var json = File.ReadAllText("../../../da.json");
-        var report = JsonSerializer.Deserialize<ReportModel>(json);
+        var report = await _fileIo.OpenJsonAsync<ReportModel>();
 
-        LoadFromModel(report); // via reflection
+        if (report != null)
+        {
+            LoadFromModel(report);
+        }
     }
 
     private void LoadFromModel(ReportModel report)
