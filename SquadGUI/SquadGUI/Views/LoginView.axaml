@@ -16,7 +16,8 @@
         <StyleInclude Source="/Assets/Styles/TextBoxDashboardStyle.axaml"></StyleInclude>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="5*, 38*, 6*, 6*, 6*, 6* ,38*" ColumnDefinitions="*,*,*">
+    <Grid RowDefinitions="5*, 38*, 6*, 6*, 6*, 6* ,38*" ColumnDefinitions="*,*,*"
+          Background="White">
         <views:CustomTitleBar Grid.Row="0" Grid.ColumnSpan="3"/>
         <TextBox Grid.Row="2" Grid.Column="1"
                  x:Name="EmailBox"
@@ -36,7 +37,9 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Margin="10"
-                Command="{Binding LoginCommand}" >
+                Command="{Binding LoginCommand}" 
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center">
             submit
         </Button>
         
@@ -44,7 +47,8 @@
                x:Name="ErrorBlock"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
-               Text="{Binding ErrorText}">
+               Text="{Binding ErrorText}"
+               Foreground="Black">
         </TextBlock>
     </Grid>
 </UserControl>

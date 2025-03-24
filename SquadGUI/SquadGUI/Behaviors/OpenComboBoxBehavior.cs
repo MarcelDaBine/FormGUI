@@ -28,12 +28,16 @@ namespace SquadGUI.Behaviors
             }
         }
 
+        
+        //for some reason now left click works on comboboxes, if it ever stops uncomment the following code.
         private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
         {
+            /*
             if (AssociatedObject != null)
             {
                 AssociatedObject.IsDropDownOpen = true;
             }
+            */
         }
 
         private void OnLostFocus(object? sender, RoutedEventArgs e)

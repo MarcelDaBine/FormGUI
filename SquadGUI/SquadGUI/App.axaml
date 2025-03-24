@@ -13,7 +13,6 @@
     <Application.Styles>
         <StyleInclude Source="/Assets/MenuIcon.axaml"/>
         <FluentTheme />
-        <StyleInclude Source="/Assets/MenuIcon.axaml"/>
     </Application.Styles>
     <Application.Resources>
         <ResourceDictionary>

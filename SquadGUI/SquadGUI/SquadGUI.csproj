@@ -33,7 +33,6 @@
       </Compile>
       <Compile Update="Views\MiniViews\SampleNumberInput.axaml.cs">
         <DependentUpon>SampleNumberInput.axaml</DependentUpon>
-        <SubType>Code</SubType>
       </Compile>
     </ItemGroup>
 </Project>
