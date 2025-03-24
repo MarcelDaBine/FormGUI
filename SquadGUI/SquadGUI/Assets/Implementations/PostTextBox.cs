@@ -10,14 +10,13 @@ namespace SquadGUI.Assets;
 /// <summary>
 /// A TextBox that only accepts numeric input for floating point numbers
 /// </summary>
-public class DoublePostTextBox : TextBox
+public class PostTextBox : TextBox
 {
     protected override Type StyleKeyOverride => typeof(TextBox);
     public enum PostUnit
     {
         None,
-        Grams,
-        Pounds
+        Percent,
     }
 
     /// <summary>
@@ -32,7 +31,7 @@ public class DoublePostTextBox : TextBox
     /// </summary>
     protected override void OnKeyDown(KeyEventArgs e)
     {
-        if (!IsNumericKey(e.Key))
+        if (!IsNumericKey(e))
         {
             e.Handled = true;
             return;
@@ -40,31 +39,66 @@ public class DoublePostTextBox : TextBox
 
         base.OnKeyDown(e);
     }
-    
+
     /// <summary>
     /// Validates if the input text results in a valid numeric value.
     /// Maximum value allowed is 2700 and leading zeros are not allowed.
     /// </summary>
-    private bool IsNumeric(string? text)
+    private bool IsNumeric(string? inputText)
     {
-        var numString = RemoveUnitFromText(Text) + text;
+        var originalText = RemoveUnitFromText(Text);
 
-        if (!double.TryParse(numString, out var num))
-        {
+        var selectionStart = SelectionStart;
+        var selectionLength = SelectionEnd - SelectionStart;
+
+        var before = originalText.Substring(0, selectionStart);
+
+        var result = before.Remove(selectionStart + selectionLength) + inputText;
+        if (!int.TryParse(result, out var num))
             return false;
-        }
-        
-        return (num <= 10000 && numString != "00");
+        return num <= 100;
     }
+
 
     /// <summary>
     /// Checks if the pressed key is a valid numeric input key
     /// Allows numbers, decimal point, subtract, backspace and enter keys
     /// </summary>
-    private bool IsNumericKey(Key key)
+    private bool IsNumericKey(KeyEventArgs e)
     {
-        return (key >= Key.D0 && key <= Key.D9) || (key >= Key.NumPad0 && key <= Key.NumPad9) || key == Key.Decimal || key == Key.OemPeriod ||
-               key == Key.Back || key == Key.Enter;
+        var key = e.Key;
+        var modifiers = e.KeyModifiers;
+
+        // Allow Ctrl combinations (like Ctrl+V, Ctrl+C, Ctrl+X, Ctrl+A, Ctrl+Z, Ctrl+Y)
+        if (modifiers.HasFlag(KeyModifiers.Control))
+        {
+            if (e.Key == Key.V)
+            {
+                var topLevel = TopLevel.GetTopLevel(this);
+                if (topLevel?.Clipboard is { } clipboard)
+                {
+                    var pasteText = clipboard.GetTextAsync();
+
+                    if (!IsNumeric(pasteText.Result))
+                    {
+                        e.Handled = true;
+                        return false;
+                    }
+                }
+            }
+            return key == Key.V || key == Key.C || key == Key.X ||
+                   key == Key.A || key == Key.Z || key == Key.Y;
+        }
+        
+        if ((key >= Key.D0 && key <= Key.D9) || (key >= Key.NumPad0 && key <= Key.NumPad9))
+            return true;
+        
+        if (key == Key.Decimal || key == Key.OemPeriod)
+            return true;
+        
+        return (key == Key.Back || key == Key.Enter || key == Key.Tab || key == Key.Delete ||
+                key == Key.Left || key == Key.Right || key == Key.Up || key == Key.Down ||
+                key == Key.Home || key == Key.End);
     }
     
     /// <summary>
@@ -74,14 +108,13 @@ public class DoublePostTextBox : TextBox
     {
         // We remove the unit if it is present so we validate the numeric part.
         if (Unit != PostUnit.None)
-            e.Text = e.Text?.Replace(" g","").Replace(" lb","");
+            e.Text = e.Text?.Replace("%","");
 
         if (!IsNumeric(e.Text))
         {
             e.Handled = true;
             return;
         }
-
         base.OnTextInput(e);
     }
     
@@ -114,8 +147,7 @@ public class DoublePostTextBox : TextBox
     {
         return Unit switch
         {
-            PostUnit.Grams => text + " g",
-            PostUnit.Pounds => text + " lb",
+            PostUnit.Percent => text + "%",
             _ => text,
         };
     }
@@ -125,10 +157,6 @@ public class DoublePostTextBox : TextBox
         if (string.IsNullOrWhiteSpace(text))
             return text;
         text = text.Trim();
-        if (text.EndsWith("lb"))
-            return text.Substring(0, text.Length - 2).Trim();
-        if (text.EndsWith('g'))
-            return text.Substring(0, text.Length - 1).Trim();
-        return text;
+        return text.EndsWith('%') ? text.AsSpan(0, text.Length - 1).Trim().ToString() : text;
     }
 }
