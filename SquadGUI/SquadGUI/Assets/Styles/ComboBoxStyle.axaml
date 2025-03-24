@@ -150,8 +150,8 @@
 
     <!--  PointerOver State  -->
     <Style Selector="^:pointerover /template/ Border#Background">
-      <Setter Property="BorderBrush" Value="#778899"/>  <!-- LightSlateGray -->
-      <Setter Property="Background" Value="#DCDCDC"/>   <!-- Gainsboro -->
+      <Setter Property="BorderBrush" Value="#778899"/> 
+      <Setter Property="Background" Value="#DCDCDC"/> 
     </Style>
 
     <!--  Pressed State

@@ -45,6 +45,16 @@
                           VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
       </ControlTemplate>
     </Setter>
+    
+    <Style Selector="^.TitleBar">
+      <Setter Property="Width" Value="47"/>
+      <Setter Property="Height" Value="47"/>
+      <Setter Property="CornerRadius" Value="2"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="BorderThickness" Value="1.2"/>
+      <Setter Property="BorderBrush" Value="#516b85"/>
+      <Setter Property="Foreground" Value="Black"/>
+    </Style>
 
     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#DCDCDC" />

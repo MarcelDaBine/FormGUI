@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -24,6 +25,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using SquadGUI.Assets;
 using Avalonia.Media;
+using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore.Measure;
 using SquadGUI.Interfaces;
 using SquadGUI.Services;
@@ -122,6 +124,8 @@ public class DashboardViewModel : ViewModelBase
     
     public ReactiveCommand<Unit,Unit> SaveCommand { get; }
     
+    public ICommand TogglePaneCommand { get; }
+    
 
 
     //constructor
@@ -130,6 +134,10 @@ public class DashboardViewModel : ViewModelBase
         _fileIo = fileIo;
         
         IsPaneOpenAttribute = false;
+        TogglePaneCommand = new RelayCommand(() =>
+        {
+            IsPaneOpenAttribute = !IsPaneOpenAttribute;
+        });
 
         var yAxis = new Axis()
         {
@@ -247,16 +255,14 @@ public class DashboardViewModel : ViewModelBase
             if (b == "PP" && double.TryParse(c.Text, out var tempPP))
             {
                 _cpList.Remove(c);
-                if (!_ppList.ContainsKey(
-                        c)) // the warning is wrong, if you fix it and type in a box the program will crash
+                if (!_ppList.ContainsKey(c)) // the warning is wrong, if you fix it and type in a box the program will crash
                     _ppList.Add(c, tempPP);
                 else _ppList[c] = tempPP;
             }
             else if (b == "CP" && double.TryParse(c.Text, out var tempCP))
             {
                 _ppList.Remove(c);
-                if (!_cpList.ContainsKey(
-                        c)) // the warning is wrong, if you fix it and type in a box the program will crash
+                if (!_cpList.ContainsKey(c)) // the warning is wrong, if you fix it and type in a box the program will crash
                     _cpList.Add(c, tempCP);
                 else _cpList[c] = tempCP;
             }
@@ -276,42 +282,36 @@ public class DashboardViewModel : ViewModelBase
             switch (DifferenceBetweenLists(lowestCpList.Take(count).ToList(), highestPpList.Take(count).ToList()))
             {
                 case <= 40:
-                    DebugChartMsg = $"Worked";
-                    MeanValueMs =
-                        CalculateV50Mean(lowestCpList.Take(count).ToList(), highestPpList.Take(count).ToList())
-                            .ToString("F3");
+                    DebugChartMsg = "Worked";
+                    MeanValueMs = CalculateV50Mean(lowestCpList.Take(count).ToList(), highestPpList.Take(count).ToList()).ToString("F3");
+                    UpdateChartValues();
                     break;
                 case <= 50:
-                    if (_ppList.Count <= 5 && _cpList.Count <= 5)
+                    count = 5;
+                    if (_ppList.Count <= count && _cpList.Count <= count)
                     {
-                        DebugChartMsg =
-                            $"%50m/s difference between the 3 highest pp shots and 3 lowest cp shot so {5 - _ppList.Count} pp shots are needed and {5 - _cpList.Count} cp shots are needed";
+                        DebugChartMsg = $"%50m/s difference between the 3 highest pp shots and 3 lowest cp shot so {count - _ppList.Count} pp shots are needed and {count - _cpList.Count} cp shots are needed";
                         _v50Series.Values = null;
                         break;
                     }
 
-                    count = 5;
-
                     DebugChartMsg = "Worked";
-                    MeanValueMs =
-                        CalculateV50Mean(lowestCpList.Take(count).ToList(), highestPpList.Take(count).ToList())
-                            .ToString("F3");
+                    MeanValueMs = CalculateV50Mean(lowestCpList.Take(count).ToList(), highestPpList.Take(count).ToList()).ToString("F3");
+                    UpdateChartValues();
                     break;
                 case <= 60:
-                    if (_ppList.Count <= 7 && _cpList.Count <= 7)
+                    count = 7;
+                    if (_ppList.Count <= count && _cpList.Count <= count)
                     {
                         DebugChartMsg =
-                            $"60m/s difference between the highest pp shot and lowest cp shot so {7 - _ppList.Count} pp shots are needed and {7 - _cpList.Count} cp shots are needed";
+                            $"60m/s difference between the highest pp shot and lowest cp shot so {count - _ppList.Count} pp shots are needed and {count - _cpList.Count} cp shots are needed";
                         _v50Series.Values = null;
                         break;
                     }
 
-                    count = 7;
-
                     DebugChartMsg = "Worked";
-                    MeanValueMs =
-                        CalculateV50Mean(lowestCpList.Take(count).ToList(), highestPpList.Take(count).ToList())
-                            .ToString("F3");
+                    MeanValueMs = CalculateV50Mean(lowestCpList.Take(count).ToList(), highestPpList.Take(count).ToList()).ToString("F3");
+                    UpdateChartValues();
                     break;
                 default:
                     DebugChartMsg = $"How Did We Get Here...";
@@ -326,7 +326,10 @@ public class DashboardViewModel : ViewModelBase
             _v50Series.Values = null;
             MeanValueMs = "";
         }
+    }
 
+    private void UpdateChartValues()
+    {
         _lineSeries.Values = NumVelTextBoxes.Where((box) => box != NumVelTextBoxes.Last())
             .Select(box => (double.TryParse(box.Text, out var result) ? result : 0))
             .ToArray();
@@ -462,11 +465,12 @@ public class DashboardViewModel : ViewModelBase
             Width = 100,
             Height = 30,
             Margin = Thickness.Parse("10"),
-            Items = { "PP", "CP", "N/A" },
+            Items = { "PP", "CP", "NA" },
             SelectedItem = value,
             Opacity = 0.3
         };
 
+        /*
         box.PointerPressed += (sender, e) =>
         {
             if (sender is ComboBox cb)
@@ -475,6 +479,7 @@ public class DashboardViewModel : ViewModelBase
                 AddButtonsSender(sender, e);
             }
         };
+        */
         box.SelectionChanged += (sender, e) => { UpdateChart(); };
         Behaviors.ValidationBehavior.SetEnableValidation(box, false);
         
@@ -518,6 +523,7 @@ public class DashboardViewModel : ViewModelBase
             SelectedItem = value,
             Opacity = 0.3
         };
+        /*
         posComboBox.PointerPressed += (sender, e) =>
         {
             if (sender is ComboBox cb)
@@ -526,6 +532,7 @@ public class DashboardViewModel : ViewModelBase
                 AddButtonsSender(sender, e);
             }
         };
+        */
         Behaviors.ValidationBehavior.SetEnableValidation(posComboBox, false);
         if (PosComboBoxes.Count > 0)
         {
@@ -1403,10 +1410,7 @@ public class DashboardViewModel : ViewModelBase
     }
 
 
-
-    //Button Commands
-    public ReactiveCommand<Unit, Unit> TogglePaneCommand { get; }
-
+    
     //getters and setters
 
     public DateTimeOffset? FormDate

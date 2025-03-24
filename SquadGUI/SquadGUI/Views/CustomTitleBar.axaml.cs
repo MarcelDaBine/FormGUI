@@ -1,8 +1,10 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Rendering.SceneGraph;
+using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactivity;
 using SquadGUI.ViewModels;
 
@@ -45,6 +47,16 @@ public partial class CustomTitleBar : UserControl
         if (VisualRoot is Window window)
         {
             window.WindowState = WindowState.Minimized;
+        }
+    }
+    private void Rectangle_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            if (VisualRoot is Window window)
+            {
+                window.BeginMoveDrag(e);
+            }
         }
     }
 }

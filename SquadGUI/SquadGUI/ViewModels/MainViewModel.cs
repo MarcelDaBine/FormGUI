@@ -26,9 +26,9 @@ public class MainViewModel: ViewModelBase
     {
         _fileIo = new JsonFileIo(window);
         
-        //_currentViewModel = new DashboardViewModel(_fileIo);
+        _currentViewModel = new DashboardViewModel(_fileIo);
         
-        _currentViewModel = new LoginViewModel(SwitchToDashboard);
+        //_currentViewModel = new LoginViewModel(SwitchToDashboard);
     }
 
     private void SwitchToDashboard()

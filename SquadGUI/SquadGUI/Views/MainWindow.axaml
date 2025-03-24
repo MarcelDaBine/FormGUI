@@ -12,8 +12,8 @@
         MinWidth="600"
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaChromeHints="NoChrome"
-        ExtendClientAreaTitleBarHeightHint="-1"
-        SystemDecorations="BorderOnly"
+        ExtendClientAreaTitleBarHeightHint="0"
+        SystemDecorations="None"
         >
     <TransitioningContentControl Content="{Binding CurrentViewModel, DataType=vm:MainViewModel}">
         <TransitioningContentControl.PageTransition>

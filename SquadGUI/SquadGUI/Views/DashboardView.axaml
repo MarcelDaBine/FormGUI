@@ -24,7 +24,7 @@
         <StyleInclude Source="/Assets/Styles/TextBlockStyle.axaml"/>
     </UserControl.Styles>
     
-    <Grid RowDefinitions="5*,95*" Background="White">
+    <Grid RowDefinitions="50,95*" Background="White">
         <views:CustomTitleBar ZIndex="2"/>
         <SplitView Grid.Row="1"
                    PanePlacement="Left"
@@ -33,19 +33,11 @@
                    IsPaneOpen="{Binding IsPaneOpenAttribute}"
                    ZIndex="1"
                    DisplayMode="CompactOverlay"
-                   PaneBackground="SlateGray">
+                   PaneBackground="SlateGray"
+                   CompactPaneLength="50">
             <!--Side menu implementation-->
             <SplitView.Pane>
-                <Grid RowDefinitions="*,*">
-                    <Button 
-                            Name="MenuPaneButton"
-                            Height="35"
-                            Width="35"
-                            Command="{Binding TogglePaneCommand}"
-                            HorizontalAlignment="Left">
-                        <PathIcon Data="{DynamicResource LineHorizontal3Regular}"/>
-                    </Button>
-                </Grid>
+                <views:SidePaneButtons Margin="-10" TogglePaneCommand="{Binding TogglePaneCommand}"/>
             </SplitView.Pane>
             
             <SplitView.Content>
