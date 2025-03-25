@@ -68,11 +68,11 @@
                     
                     <!-- Upper report implementation-->
                     
-                    <Grid Grid.Row="1">
+                    <Grid Grid.Row="1" Grid.Column="0">
                         <Grid RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*"
-                              ColumnDefinitions="1.5*,1.5*,1.5*,1.5*,1.5*,1.5*,1.5*,1.5*" 
-                              HorizontalAlignment="Stretch"
-                              Margin="20">
+                              ColumnDefinitions="*,*,*,*,*,*,*,*" 
+                              HorizontalAlignment="Center"
+                              Margin="8">
                             <Border  Grid.RowSpan="15" Grid.Column="2"
                                      BorderBrush="White" 
                                      BorderThickness="2,0,0,0" 
@@ -81,7 +81,7 @@
                                      Margin="20,-22,15,-20"/>
                             
                             <!-- Row 0 -->
-                            <TextBlock Text="Date:" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8"/>
+                            <TextBlock Text="Date:" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,8,8,8"/>
 
 
                             <DatePicker Grid.Column="1" Grid.Row="0" SelectedDate="{Binding FormDate}"
@@ -90,7 +90,7 @@
                                         Margin="8"/>
 
 
-                            <TextBlock Text="Shooter:" Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left"  Margin="8,0,0,0"/>
+                            <TextBlock Text="Shooter:" Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left"  Margin="0,0,0,0"/>
 
 
                             <TextBox Text="{Binding Shooter}"

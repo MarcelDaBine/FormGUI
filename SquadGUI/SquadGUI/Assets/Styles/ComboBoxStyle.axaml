@@ -51,11 +51,9 @@
     <Setter Property="BorderBrush" Value="SlateGray" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="4" />
-    <Setter Property="BorderBrush" Value="SlateGray"/>
+    <!--<Setter Property="BorderBrush" Value="SlateGray"/>
     <Setter Property="Foreground" Value="DimGray"/>
-    <Setter Property="Background" Value="LightGray"/>
-    <Setter Property="BorderThickness" Value="{DynamicResource ComboBoxBorderThemeThickness}" />
-    <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+    <Setter Property="Background" Value="LightGray"/>-->
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
     <Setter Property="MinHeight" Value="{DynamicResource ComboBoxMinHeight}" />

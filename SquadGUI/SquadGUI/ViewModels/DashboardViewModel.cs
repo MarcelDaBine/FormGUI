@@ -140,7 +140,7 @@ public class DashboardViewModel : ViewModelBase
 
         _lineSeries = new LineSeries<double>
         {
-            Stroke = new SolidColorPaint(SKColors.SlateGray, 6),
+            Stroke = new SolidColorPaint(SKColor.Parse("#1e90ff"), 6),
             GeometrySize = 10,
             GeometryStroke = new SolidColorPaint(SKColors.SlateGray),
             GeometryFill = new SolidColorPaint(SKColors.WhiteSmoke),

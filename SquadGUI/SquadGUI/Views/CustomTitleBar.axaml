@@ -9,18 +9,25 @@
     <UserControl.Styles>
         <StyleInclude Source="/Assets/MenuIcon.axaml"></StyleInclude>
         <Style Selector="Button">
-            <Setter Property="Width" Value="35"/>
-            <Setter Property="Height" Value="35"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
             <Setter Property="CornerRadius" Value="0"/>
             <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,8,8,8"/>
         </Style>
     </UserControl.Styles>
+    
     <Grid>
+        <!--Fill="Transparent"-->
         <Rectangle Height="65" 
-                           Grid.ColumnSpan="4"
-                           Fill="LightSlateGray"
-                           VerticalAlignment="Top"
-                           ZIndex="0"/>
+                   Grid.ColumnSpan="4"
+                   VerticalAlignment="Top"
+                   ZIndex="0"
+                   Fill="#0047ab">
+            <Rectangle.Effect>
+                <BlurEffect Radius="20"/>
+            </Rectangle.Effect>
+        </Rectangle>
         <Grid ColumnDefinitions="*,35,35,35" >
             <Button Grid.Column="1" 
                             Name="Minimize"

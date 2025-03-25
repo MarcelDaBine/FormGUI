@@ -22,7 +22,7 @@
     <Setter Property="MinHeight" Value="6"/>
     <Setter Property="Margin" Value="10"/>
     <Setter Property="BorderBrush" Value="SlateGray"/>
-    <Setter Property="Foreground" Value="DimGray"/>
+    <Setter Property="Foreground" Value="Black"/>
     <Setter Property="Background" Value="LightGray"/>
     <Setter Property="Transitions">
       <Transitions>
