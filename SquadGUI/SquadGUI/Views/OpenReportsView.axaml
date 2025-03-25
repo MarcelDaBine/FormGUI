@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SquadGUI.Views.OpenReportsView"
+             xmlns:control="clr-namespace:SquadGUI.Assets"
+             xmlns:views="clr-namespace:SquadGUI.Views"
+             xmlns:vm="clr-namespace:SquadGUI.ViewModels"
+             x:DataType="vm:OpenReportsViewModel">
+    <Grid Background="White">
+    </Grid>
+</UserControl>

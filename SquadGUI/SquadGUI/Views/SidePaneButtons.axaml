@@ -23,8 +23,9 @@
                 HorizontalContentAlignment="Center"
                 HorizontalAlignment="Left"
                 Height="50"
-                Width="50">
-            Yes
+                Width="50"
+                Command="{Binding OpenFileCommand, RelativeSource={RelativeSource AncestorType=views:SidePaneButtons}}">
+            OpenFile
         </Button>
         
         <Button Grid.Row="3" 

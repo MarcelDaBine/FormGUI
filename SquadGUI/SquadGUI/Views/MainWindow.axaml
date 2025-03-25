@@ -6,6 +6,7 @@
         xmlns:views="clr-namespace:SquadGUI.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SquadGUI.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="SquadGUI"
         MinHeight="850"
@@ -15,9 +16,53 @@
         ExtendClientAreaTitleBarHeightHint="0"
         SystemDecorations="None"
         >
-    <TransitioningContentControl Content="{Binding CurrentViewModel, DataType=vm:MainViewModel}">
-        <TransitioningContentControl.PageTransition>
-            <CrossFade Duration="0.6"/>
-        </TransitioningContentControl.PageTransition>
-    </TransitioningContentControl>
+    
+    <Grid RowDefinitions="50, *" Background="White">
+        <views:CustomTitleBar />
+        <SplitView Grid.Row="1" 
+                   PanePlacement="Left"
+                   OpenPaneLength="500"
+                   x:Name="MenuPane"
+                   IsPaneOpen="{Binding IsPaneOpen}"
+                   ZIndex="1"
+                   DisplayMode="{Binding SidePaneMode}"
+                   PaneBackground="SlateGray"
+                   CompactPaneLength="50">
+        <SplitView.Pane>
+            <Grid RowDefinitions="50,50,50,*,50"
+                  Margin="-9">
+                <Button Grid.Row="0"
+                        Classes="TitleBar"
+                        HorizontalAlignment="Left"
+                        Content="☰"
+                        Command="{Binding TogglePaneCommand}"/>
+        
+                <Button Grid.Row="1"
+                        Classes="TitleBar"
+                        HorizontalAlignment="Left"
+                        Content="Back"
+                        Command="{Binding BackCommand}"/>
+                
+                <Button Grid.Row="2" 
+                        Classes="TitleBar"
+                        HorizontalAlignment="Left"
+                        Content="OpenFile"
+                        Command="{Binding ShowReportsCommand}"/>
+        
+                <Button Grid.Row="4" 
+                        Classes="TitleBar"
+                        HorizontalAlignment="Left"
+                        Content="Yes"/>
+            </Grid>
+        </SplitView.Pane>
+            
+        <SplitView.Content>
+            <TransitioningContentControl Content="{Binding CurrentViewModel}">
+                <TransitioningContentControl.PageTransition>
+                    <CrossFade Duration="0.6"/>
+                </TransitioningContentControl.PageTransition>
+            </TransitioningContentControl>
+        </SplitView.Content>
+        </SplitView>
+    </Grid>
 </Window>

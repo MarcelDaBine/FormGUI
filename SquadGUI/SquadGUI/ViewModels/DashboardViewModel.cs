@@ -119,6 +119,7 @@ public class DashboardViewModel : ViewModelBase
     private TimeSpan? _formTime = TimeSpan.Parse(DateTime.Now.ToString("HH:mm:ss"));
     
     private IFileIo _fileIo;
+    private IHttpService _httpService;
     public ReactiveCommand<Grid,Unit> ValidateAllCommand { get; }
     public ReactiveCommand<Unit, Task> DeserializeCommand { get;}
     
@@ -129,9 +130,10 @@ public class DashboardViewModel : ViewModelBase
 
 
     //constructor
-    public DashboardViewModel(IFileIo fileIo)
+    public DashboardViewModel(IFileIo fileIo, IHttpService httpService)
     {
         _fileIo = fileIo;
+        _httpService = httpService;
         
         IsPaneOpenAttribute = false;
         TogglePaneCommand = new RelayCommand(() =>
@@ -1196,7 +1198,8 @@ public class DashboardViewModel : ViewModelBase
 
         // You can write it to a file or just debug output
         
-        _fileIo.SubmitJsonAsync(json);
+        //_fileIo.SubmitJsonAsync(json);
+        _httpService.SubmitAsync(json);
         
         Console.WriteLine(json); // or Debug.WriteLine(json) if in Avalonia GUI
     }
@@ -1279,7 +1282,8 @@ public class DashboardViewModel : ViewModelBase
 
         var options = new JsonSerializerOptions { WriteIndented = true };
         string json = JsonSerializer.Serialize(data, options);
-        _fileIo.SaveJsonAsync(json);
+        //_fileIo.SaveJsonAsync(json);
+        _httpService.SaveAsync(json);
     }
 
 

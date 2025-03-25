@@ -23,25 +23,8 @@
         <StyleInclude Source="/Assets/Styles/FlyOut.axaml"/>
         <StyleInclude Source="/Assets/Styles/TextBlockStyle.axaml"/>
     </UserControl.Styles>
-    
-    <Grid RowDefinitions="50,95*" Background="White">
-        <views:CustomTitleBar ZIndex="2"/>
-        <SplitView Grid.Row="1"
-                   PanePlacement="Left"
-                   OpenPaneLength="500"
-                   x:Name="MenuPane"
-                   IsPaneOpen="{Binding IsPaneOpenAttribute}"
-                   ZIndex="1"
-                   DisplayMode="CompactOverlay"
-                   PaneBackground="SlateGray"
-                   CompactPaneLength="50">
-            <!--Side menu implementation-->
-            <SplitView.Pane>
-                <views:SidePaneButtons Margin="-10" TogglePaneCommand="{Binding TogglePaneCommand}"/>
-            </SplitView.Pane>
-            
-            <SplitView.Content>
-                <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                <ScrollViewer HorizontalScrollBarVisibility="Visible"
+                              Background="White">
                     <Grid RowDefinitions="Auto,Auto,*,*,*,*"
                           x:Name="MainGridContent"><!--5*,45*,45*,5*-->
                     
@@ -689,8 +672,5 @@
                     </Grid>                    
                     </Grid>                    
                 </ScrollViewer>
-            </SplitView.Content>
-        </SplitView>
-    </Grid>
 </UserControl>
 

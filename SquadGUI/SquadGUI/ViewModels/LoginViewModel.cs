@@ -7,6 +7,7 @@ using System.Numerics;
 using ReactiveUI;
 using System.Reactive;
 using System.Threading.Tasks;
+using SquadGUI.Interfaces;
 using SquadGUI.Services;
 
 namespace SquadGUI.ViewModels;
@@ -19,7 +20,7 @@ public partial class LoginViewModel : ViewModelBase
 
     private readonly List<string> _emailSuffix = new List<string> { "@", "." };
     
-    private readonly HttpService _httpService;
+    private readonly IHttpService _httpService;
     
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
     
@@ -43,7 +44,7 @@ public partial class LoginViewModel : ViewModelBase
     }
     
 
-    public LoginViewModel(Action navigateToDashboard)
+    public LoginViewModel(Action navigateToDashboard, IHttpService httpService)
     {
         LoginCommand = ReactiveCommand.Create(LoginLogic, outputScheduler: RxApp.MainThreadScheduler);
         _navigateToDashboard = navigateToDashboard;
@@ -51,7 +52,7 @@ public partial class LoginViewModel : ViewModelBase
         _email = string.Empty;
         _errorText = string.Empty;
         _password = string.Empty;
-        _httpService = new HttpService();
+        _httpService = httpService;
     }
     
     private void LoginLogic()

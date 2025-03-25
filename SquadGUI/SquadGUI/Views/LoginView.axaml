@@ -16,23 +16,22 @@
         <StyleInclude Source="/Assets/Styles/TextBoxDashboardStyle.axaml"></StyleInclude>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="5*, 38*, 6*, 6*, 6*, 6* ,38*" ColumnDefinitions="*,*,*"
+    <Grid RowDefinitions="38*, 6*, 6*, 6*, 6* ,38*" ColumnDefinitions="*,*,*"
           Background="White">
-        <views:CustomTitleBar Grid.Row="0" Grid.ColumnSpan="3"/>
-        <TextBox Grid.Row="2" Grid.Column="1"
+        <TextBox Grid.Row="1" Grid.Column="1"
                  x:Name="EmailBox"
                  Watermark="email"
                  KeyDown="EmailBox_OnKeyDown"
                  Text="{Binding Email}"/>
         
-        <TextBox Grid.Row="3" Grid.Column="1"
+        <TextBox Grid.Row="2" Grid.Column="1"
                  x:Name="PassBox"
                  Watermark="password"
                  PasswordChar="*"
                  KeyDown="PassBox_OnKeyDown"
                  Text="{Binding Password}"/>
         
-        <Button Grid.Row="4" Grid.Column="1"
+        <Button Grid.Row="3" Grid.Column="1"
                 x:Name="SubmitButton"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -43,7 +42,7 @@
             submit
         </Button>
         
-        <TextBlock Grid.Row="5" Grid.Column="1"
+        <TextBlock Grid.Row="4" Grid.Column="1"
                x:Name="ErrorBlock"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
