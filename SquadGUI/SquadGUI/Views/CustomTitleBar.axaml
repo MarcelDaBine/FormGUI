@@ -14,7 +14,7 @@
     <Grid Height="50"
           Background="#bac8de">
         <!-- Titlebar background rectangle for drag -->
-        <Rectangle Fill="SlateGray"
+        <Rectangle Fill="#1A2D44"
                    VerticalAlignment="Top"
                    Height="48"
                    PointerPressed="Rectangle_OnPointerPressed"

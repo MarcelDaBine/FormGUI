@@ -7,7 +7,97 @@
              xmlns:control="clr-namespace:SquadGUI.Assets"
              xmlns:views="clr-namespace:SquadGUI.Views"
              xmlns:vm="clr-namespace:SquadGUI.ViewModels"
-             x:DataType="vm:OpenReportsViewModel">
-    <Grid Background="White">
+             x:DataType="vm:OpenReportsViewModel"
+             x:Name="Root">
+    
+    
+    
+    <Grid Background="White"
+          RowDefinitions="6*,4*,6*,70*"
+          ColumnDefinitions="160,*">
+        <TextBlock 
+            Text="Open files from PC:"
+            Foreground="Black"
+            VerticalAlignment="Center"
+            Margin="5"/>
+        <Button Grid.Column="1"
+            Content="Open"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Command="{Binding OpenLocalCommand}"/>
+        <TextBlock Grid.Row="1" Grid.Column="0"
+            Text="Open files from server:"
+            VerticalAlignment="Center"
+            Foreground="Black"
+            Margin="5"/>
+        <Grid Grid.Row="2" Grid.Column="0"
+              ColumnDefinitions="*,10,20"
+              Margin="9,9,0,9">
+            <TextBlock Grid.Column="0"
+                       Text = "{Binding PageNumberString, StringFormat='Page: {0}'}"
+                       VerticalAlignment="Center"
+                       Foreground="Black"/>
+            <Button Grid.Column="1" Command="{Binding PreviousPageCommand}"
+                     Background="White"
+                     Width="30"
+                     Height="30"
+                     HorizontalContentAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     VerticalAlignment="Center">
+                <PathIcon 
+                    Foreground="Black"
+                    Data="{DynamicResource LeftIcon}"/>
+            </Button>
+            <Button Grid.Column="2" Command="{Binding NextPageCommand}"
+                    Background="White"
+                    Width="30"
+                    Height="30"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    VerticalAlignment="Center">
+                <PathIcon Foreground="Black" Data="{DynamicResource RightIcon}"/>
+            </Button>
+        </Grid>
+        <ScrollViewer Grid.Row="1" Grid.Column="1" Grid.RowSpan="3"
+                      HorizontalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Summaries}"
+                          Background="WhiteSmoke"
+                          x:Name="Control"
+                          Margin="2,0,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button  Command="{Binding OpenCommand}"
+                                 CommandParameter="{Binding}"
+                                 Background="White"
+                                 Width="900"
+                                 Height="30"
+                                 HorizontalAlignment="Left"
+                                 HorizontalContentAlignment="Left"
+                                 VerticalContentAlignment="Center"
+                                 Margin="5">
+                            <Grid Margin="8"
+                                  ColumnDefinitions="5*,15*,40*,40*"
+                                  Height="30"
+                                  Width="900">
+                                <TextBlock Grid.Column="0" Text="{Binding Model.Id, StringFormat='ID: {0}'}" FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Model.Status, StringFormat='Status: {0}'}" Foreground="Black"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="{Binding Model.ClientName, StringFormat='Client Name: {0}'}" Foreground="Black"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="{Binding Model.LastEdited, StringFormat='Last Edited: {0}'}" FontStyle="Italic" Foreground="Black"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Right"
+                                           Margin="5,1"/>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
     </Grid>
 </UserControl>

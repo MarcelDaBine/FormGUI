@@ -73,9 +73,6 @@ public class ValidationBehavior : AvaloniaObject
         var boxes = parent.GetVisualDescendants()
             .OfType<TemplatedControl>()
             .Where(GetEnableValidation);
-        var controls = parent.GetVisualDescendants()
-            .OfType<TemplatedControl>()
-            .Where(GetIsControl);
         
         var isGood = true;
 
@@ -101,9 +98,39 @@ public class ValidationBehavior : AvaloniaObject
                 }
             }
         }
-
-
+        
         return isGood;
+    }
+    public static bool ValidateAtLeastOne(Panel parent)
+    {
+        var boxes = parent.GetVisualDescendants()
+            .OfType<TemplatedControl>()
+            .Where(GetEnableValidation);
+        
+
+        foreach (var box in boxes)
+        {
+            if (ValidateControl(box))
+            {
+                return true;
+            }
+        }
+        
+        var itemsControls = parent.GetVisualDescendants()
+            .OfType<ItemsControl>()
+            .Where(GetIsControl); // Use this to filter only the ItemsControls you want
+
+        foreach (var ic in itemsControls)
+        {
+            foreach (var control in ic.Items.OfType<TemplatedControl>())
+            {
+                if (GetEnableValidation(control) && ValidateControl(control))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // Perform validation on a single control

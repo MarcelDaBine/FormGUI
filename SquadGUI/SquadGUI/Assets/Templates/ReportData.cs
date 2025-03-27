@@ -4,6 +4,9 @@ using System.Text.Json.Serialization;
 
 public class ReportModel
 {
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+    
     [JsonPropertyName("date")]
     public string? Date { get; set; }
 

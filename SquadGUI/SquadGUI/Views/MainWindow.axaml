@@ -16,7 +16,9 @@
         ExtendClientAreaTitleBarHeightHint="0"
         SystemDecorations="None"
         >
-    
+    <Window.Styles>
+        <StyleInclude Source="/Assets/MenuIcon.axaml" />
+    </Window.Styles>
     <Grid RowDefinitions="50, *" Background="White">
         <views:CustomTitleBar />
         <SplitView Grid.Row="1" 
@@ -29,30 +31,42 @@
                    PaneBackground="SlateGray"
                    CompactPaneLength="50">
         <SplitView.Pane>
-            <Grid RowDefinitions="50,50,50,*,50"
+            <Grid RowDefinitions="50,50,50,50,*,50"
                   Margin="-9">
                 <Button Grid.Row="0"
                         Classes="TitleBar"
                         HorizontalAlignment="Left"
-                        Content="☰"
-                        Command="{Binding TogglePaneCommand}"/>
+                        Command="{Binding TogglePaneCommand}">
+                    <PathIcon Data="{DynamicResource TabsRegular}"/>
+                </Button>
         
                 <Button Grid.Row="1"
                         Classes="TitleBar"
                         HorizontalAlignment="Left"
-                        Content="Back"
-                        Command="{Binding BackCommand}"/>
+                        Command="{Binding BackCommand}">
+                    <PathIcon Data="{DynamicResource BackIcon}"/>
+                </Button>
                 
                 <Button Grid.Row="2" 
                         Classes="TitleBar"
                         HorizontalAlignment="Left"
-                        Content="OpenFile"
-                        Command="{Binding ShowReportsCommand}"/>
+                        Command="{Binding ShowReportsCommand}">
+                    <PathIcon Data="{DynamicResource OpenIcon}"/>
+                </Button>
         
-                <Button Grid.Row="4" 
+                <Button Grid.Row="3" 
                         Classes="TitleBar"
                         HorizontalAlignment="Left"
-                        Content="Yes"/>
+                        Command="{Binding  NewFileCommand}">
+                    <PathIcon Data="{DynamicResource NewFormIcon}"/>
+                </Button>
+
+                <Button Grid.Row="5" 
+                        Classes="TitleBar"
+                        HorizontalAlignment="Left"
+                        Command="{Binding LogOutCommand}">
+                    <PathIcon Data="{DynamicResource LogOutIcon}"/>
+                </Button>
             </Grid>
         </SplitView.Pane>
             

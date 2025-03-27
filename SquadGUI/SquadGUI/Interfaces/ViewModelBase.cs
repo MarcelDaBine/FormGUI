@@ -5,4 +5,5 @@ namespace SquadGUI.ViewModels;
 
 public abstract class ViewModelBase : ReactiveObject
 {
+    
 }

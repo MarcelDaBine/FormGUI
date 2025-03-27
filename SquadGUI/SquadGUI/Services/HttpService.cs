@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -74,16 +75,103 @@ public class HttpService : IHttpService
     }
     
 
-    public async Task<string> SaveAsync(string data)
+    public async Task<string> SaveAsync(string data, int id)
     {
-        return await PostJsonWithJwt($"{_url}form/save", data);
+        return await PostJsonWithJwt($"{_url}forms/{id}/save", data);
     }
 
-    public async Task<string> SubmitAsync(string data)
+    public async Task<string> SubmitAsync(string data, int id)
     {
-        return await PostJsonWithJwt($"{_url}form/submit", data);
+        return await PostJsonWithJwt($"{_url}forms/{id}/submit", data);
     }
     
+    public async Task<List<ProjectSummary>> GetSummariesAsync(int page = 0, int size = 20, string? status = null)
+    {
+        if (string.IsNullOrWhiteSpace(_jwtToken))
+            throw new InvalidOperationException("Not authenticated");
+
+        var url = $"{_url}forms?page={page}&size={size}";
+        if (!string.IsNullOrEmpty(status))
+            url += $"&status={status}";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("Cookie", $"jwt={_jwtToken}");
+
+        var response = await _httpClient.SendAsync(request);
+        var json = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Failed to get summaries: {response.StatusCode} - {json}");
+
+        var summaryResponse = JsonSerializer.Deserialize<SummaryResponse>(json, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        return summaryResponse?.Content ?? new List<ProjectSummary>();
+    }
+    
+    public async Task<int> CreateNewFileId()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_jwtToken))
+                throw new InvalidOperationException("Not authenticated");
+
+            var url = $"{_url}forms/new";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add("Cookie", $"jwt={_jwtToken}");
+
+            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);;
+            var json = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Failed to get summaries: {response.StatusCode} - {json}");
+
+            var summaryResponse = JsonSerializer.Deserialize<ApiResponseNewId>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return summaryResponse.Data;
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+            throw;
+        }
+    }
+    
+    public async Task<ReportModel?> GetFormByIdAsync(int id)
+    {
+        if (string.IsNullOrWhiteSpace(_jwtToken))
+            throw new InvalidOperationException("Not authenticated");
+
+        var url = $"{_url}forms/{id}";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("Cookie", $"jwt={_jwtToken}");
+
+        var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+        var json = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Failed to retrieve form: {response.StatusCode} - {json}");
+
+        var result = JsonSerializer.Deserialize<ApiResponse<ReportModel>>(json, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+        
+        if (result is null || result.Data is null)
+            throw new Exception($"Server returned an invalid response: {json}");
+
+        return result.Data;
+    }
+
+
+
     private async Task<string> PostJsonWithJwt(string url, string data)
     {
         /*
@@ -98,7 +186,7 @@ public class HttpService : IHttpService
             {
                 Content = content
             };
-            
+
             request.Headers.Add("Cookie", $"jwt={_jwtToken}");
             Console.WriteLine($"[Debug] Sent Cookie: jwt={_jwtToken}");
 

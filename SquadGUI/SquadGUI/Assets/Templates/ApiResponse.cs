@@ -9,3 +9,11 @@ public class ApiResponse
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;
 }
+
+public class ApiResponse<T>
+{
+    public string Code { get; set; }
+    public string Message { get; set; }
+    public T Data { get; set; }
+}
+

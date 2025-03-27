@@ -54,8 +54,12 @@
       <Setter Property="BorderThickness" Value="1.2"/>
       <Setter Property="BorderBrush" Value="#516b85"/>
       <Setter Property="Foreground" Value="Black"/>
+      <Setter Property="Background" Value="#2A3B5C"></Setter>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Style Selector="^.SideView">
+        <Setter Property="Background" Value="Gray"></Setter>
+      </Style>
     </Style>
 
     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">

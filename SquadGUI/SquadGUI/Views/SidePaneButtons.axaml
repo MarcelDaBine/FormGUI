@@ -25,7 +25,7 @@
                 Height="50"
                 Width="50"
                 Command="{Binding OpenFileCommand, RelativeSource={RelativeSource AncestorType=views:SidePaneButtons}}">
-            OpenFile
+            <PathIcon Data="{DynamicResource NewFileIcon}"/>
         </Button>
         
         <Button Grid.Row="3" 
@@ -35,7 +35,7 @@
                 HorizontalAlignment="Left"
                 Height="50"
                 Width="50">
-            Yes
+            <PathIcon Data="{DynamicResource NewFileIcon}"/>
         </Button>
     </Grid>
 </UserControl>

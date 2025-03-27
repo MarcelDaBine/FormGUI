@@ -15,8 +15,9 @@ public class MainViewModel : ViewModelBase
 {
     private ViewModelBase _currentViewModel;
     private ViewModelBase _previousViewModel;
-    private readonly ViewModelBase _dashboardViewModel;
-    private ViewModelBase _openReportsViewModel;
+    private ViewModelBase _dashboardViewModel;
+    private readonly ViewModelBase _openReportsViewModel;
+    private readonly ViewModelBase _homeViewModel;
     
     private IFileIo _fileIo;
     private IHttpService _httpService;
@@ -54,35 +55,30 @@ public class MainViewModel : ViewModelBase
             this.RaiseAndSetIfChanged( ref _currentViewModel, value);
         }
     }
-
-    public ICommand ShowDashboardCommand { get; }
+    
     public ICommand ShowReportsCommand { get; }
-    
     public ICommand TogglePaneCommand { get; }
-    
     public ICommand BackCommand { get; }
+    public ICommand LogOutCommand { get; }
+    public ICommand NewFileCommand { get; }
+    public ICommand HomeCommand { get; }
 
     public MainViewModel(Window window)
     {
         _fileIo = new JsonFileIo(window);
         _httpService = new HttpService();
         
-        _dashboardViewModel = new DashboardViewModel(_fileIo, _httpService);
-        _openReportsViewModel = new OpenReportsViewModel(_httpService);
-
-        ShowDashboardCommand = ReactiveCommand.Create(() =>
-        {
-            if (CurrentViewModel is not DashboardViewModel)
-            {
-                _previousViewModel = CurrentViewModel;
-                CurrentViewModel = _dashboardViewModel;
-            }
-        });
+        _openReportsViewModel = new OpenReportsViewModel(_httpService, _fileIo, LoadDashboard);
+        _homeViewModel = new HomeViewModel();
+        
+        //CurrentViewModel = _dashboardViewModel;
+        CurrentViewModel = new LoginViewModel(SwitchToHomeFromLogin, _httpService);
 
         ShowReportsCommand = ReactiveCommand.Create(() =>
         {
             if (CurrentViewModel is not OpenReportsViewModel)
             {
+                ((INavigable)_openReportsViewModel).OnNavigatedTo();
                 _previousViewModel = CurrentViewModel;
                 CurrentViewModel = _openReportsViewModel;
             }
@@ -90,23 +86,50 @@ public class MainViewModel : ViewModelBase
         
         BackCommand = ReactiveCommand.Create(() =>
         {
-            if (_previousViewModel != null)
+            if (_previousViewModel != null && _previousViewModel != CurrentViewModel && _previousViewModel is not DashboardViewModel)
             {
                 var temp = CurrentViewModel;
                 CurrentViewModel = _previousViewModel;
                 _previousViewModel = temp;
             }
         });
+
+        HomeCommand = ReactiveCommand.Create(() =>
+        {
+            if (_currentViewModel is not HomeViewModel)
+            {
+                _previousViewModel = CurrentViewModel;
+                CurrentViewModel = _homeViewModel;
+            }
+        });
+
+        LogOutCommand = ReactiveCommand.Create(Logout);
+        
+        NewFileCommand = ReactiveCommand.Create(NewFile);
         
         TogglePaneCommand = ReactiveCommand.Create( () => 
             IsPaneOpen = !IsPaneOpen);
-
-        //CurrentViewModel = new DashboardViewModel(_fileIo, _httpService);
-        CurrentViewModel = new LoginViewModel(SwitchToDashboard, _httpService);
     }
 
-    private void SwitchToDashboard()
+    private void SwitchToHomeFromLogin()
     {
+        CurrentViewModel = _homeViewModel;
+    }
+
+    private void Logout()
+    {
+        CurrentViewModel = new LoginViewModel(SwitchToHomeFromLogin, _httpService);
+    }
+
+    private void NewFile()
+    {
+        var id = _httpService.CreateNewFileId().Result;
+        _dashboardViewModel = new DashboardViewModel(_fileIo, _httpService, id);
         CurrentViewModel = _dashboardViewModel;
+    }
+    
+    private void LoadDashboard(ReportModel reportModel)
+    {
+        CurrentViewModel = new DashboardViewModel(_fileIo, _httpService, reportModel.Id, reportModel);
     }
 }
