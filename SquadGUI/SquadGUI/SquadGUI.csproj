@@ -35,4 +35,8 @@
         <DependentUpon>SampleNumberInput.axaml</DependentUpon>
       </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="ViewModels\Collections\" />
+    </ItemGroup>
 </Project>
