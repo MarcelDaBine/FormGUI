@@ -364,9 +364,9 @@
                             <TextBlock Classes="SectionText" Text="Applicable Standards or Procedures" Grid.Row="25" Grid.ColumnSpan="7"/>
 
                             <!-- Standards or Procedures Fields -->
-                            <ItemsControl ItemsSource="{Binding StandardsTextBoxesIndexes}" Grid.Row="26" Grid.Column="0"  HorizontalAlignment="Left" Margin="8"/>
+                            <ItemsControl ItemsSource="{Binding StandardsTextBoxesIndexes}" Grid.Row="26" Grid.Column="0"  HorizontalAlignment="Right" Margin="8"/>
                             <ItemsControl ItemsSource="{Binding StandardsTextBoxes}" Grid.Row="26" Grid.Column="1" HorizontalAlignment="Left" Margin="8"/>
-                            <ItemsControl Grid.Row="29" Grid.Column="2"
+                            <ItemsControl Grid.Row="26" Grid.Column="2"
                                           HorizontalAlignment="Left"
                                           ItemsSource="{Binding StandardsDeleteButtons}"
                                           Margin="8"/>
