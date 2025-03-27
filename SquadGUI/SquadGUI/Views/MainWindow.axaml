@@ -37,7 +37,7 @@
                         Classes="TitleBar"
                         HorizontalAlignment="Left"
                         Command="{Binding TogglePaneCommand}">
-                    <PathIcon Data="{DynamicResource TabsRegular}"/>
+                    <PathIcon Data="{DynamicResource LineHorizontal3Regular}"/>
                 </Button>
         
                 <Button Grid.Row="1"

@@ -1447,18 +1447,31 @@ public class DashboardViewModel : ViewModelBase
         
         if (report.InputRowsInfo != null)
         {
-            foreach (var item in report.InputRowsInfo)
+            for (int i = 0; i < report.InputRowsInfo.Count; i++)
             {
-                AddSampleInfoBox(item);
-                AddSampleInfoIndexBlock();
-                AddSampleDeleteButton();
+                var item = report.InputRowsInfo[i];
+                if (SampleInfoBoxes.Count > i)
+                {
+                    SampleInfoBoxes[i].Text = item;
+                }
+                else
+                {
+                    AddSampleInfoBox(item);
+                    AddSampleInfoIndexBlock();
+                    AddSampleDeleteButton();
+                }
             }
         }
         
         if (report.InputRowsProc != null)
         {
-            foreach (var item in report.InputRowsProc)
+            for (int j = 0; j < report.InputRowsProc.Count; ++j)
             {
+                var item = report.InputRowsProc[j];
+                if (SampleInfoBoxes.Count > j)
+                {
+                    SampleInfoBoxes[j].Text = item;
+                }
                 AddStandardsTextBox(item);
                 AddStandardsTextIndexBlock();
                 AddStandardsDeleteButton();
