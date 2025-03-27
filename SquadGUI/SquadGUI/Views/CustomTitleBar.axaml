@@ -23,7 +23,7 @@
                    Grid.ColumnSpan="4"
                    VerticalAlignment="Top"
                    ZIndex="0"
-                   Fill="DimGray"><!--#0047ab-->
+                   Fill="#003153"><!--#0047ab-->
             
         </Rectangle>
         <Grid ColumnDefinitions="*,35,35,35" >

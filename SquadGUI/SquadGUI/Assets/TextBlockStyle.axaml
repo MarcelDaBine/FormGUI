@@ -43,6 +43,8 @@
         <Setter Property="FontFamily" Value="Verdana"/>
     </Style>
     
+    
+    
     <!-- mid-section Titles style -->
     <Style Selector="TextBlock.SectionText">
         <Setter Property="FontSize" Value="16"/>
