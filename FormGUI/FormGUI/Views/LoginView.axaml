@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:FormGUI.ViewModels"
+             xmlns:views="clr-namespace:FormGUI.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="FormGUI.Views.LoginView"
+             x:DataType="vm:LoginViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:LoginViewModel/>
+    </Design.DataContext>
+    <UserControl.Styles>
+        <StyleInclude Source="/Assets/Styles/TextBoxDashboardStyle.axaml"></StyleInclude>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="5*, 38*, 6*, 6*, 6*, 6* ,38*" ColumnDefinitions="*,*,*"
+          Background="White">
+        <views:CustomTitleBar Grid.Row="0" Grid.ColumnSpan="3"/>
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 x:Name="EmailBox"
+                 Watermark="email"
+                 KeyDown="EmailBox_OnKeyDown"
+                 Text="{Binding Email}"/>
+        
+        <TextBox Grid.Row="3" Grid.Column="1"
+                 x:Name="PassBox"
+                 Watermark="password"
+                 PasswordChar="*"
+                 KeyDown="PassBox_OnKeyDown"
+                 Text="{Binding Password}"/>
+        
+        <Button Grid.Row="4" Grid.Column="1"
+                x:Name="SubmitButton"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="10"
+                Command="{Binding LoginCommand}" 
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center">
+            submit
+        </Button>
+        
+        <TextBlock Grid.Row="5" Grid.Column="1"
+               x:Name="ErrorBlock"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Text="{Binding ErrorText}"
+               Foreground="Black">
+        </TextBlock>
+    </Grid>
+</UserControl>
